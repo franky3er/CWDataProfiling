@@ -39,11 +39,16 @@ class AttributeAnalysisHTMLRenderer(AttributeAnalysisRenderer):
                     <meta charset="utf-8" />
                     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+                    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+                    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+                    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
                     <title>{attribute_name} | Standard Attribut Analyse</title>
                 </head>
                 <body>
                     <div class="container-fluid">
-                        <h1>Standard Attribut Analyse: {attribute_name}</h1>
+                        <h1>Standard Attribut Analyse: {attribute_name}</h1><br/>
                         <h3>Metainformationen: </h3>
                         <div class="row"> 
                             <div class="w-50 p-3">
@@ -59,7 +64,9 @@ class AttributeAnalysisHTMLRenderer(AttributeAnalysisRenderer):
                                 </table>
                             </div>
                         </div>
+                        <br/>
                         
+                        <h3>Analyse:</h3>
                         <div class="accordion" id="accordion">
                             
         """.format(
@@ -77,9 +84,9 @@ class AttributeAnalysisHTMLRenderer(AttributeAnalysisRenderer):
                             
                         </div>
                     </div>
-                    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
-                    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+                    
+                    
+                    
                 </body>
             </html>
         """
@@ -102,7 +109,7 @@ class IndicatorRenderer(ABC):
                             </h5>
                         </div>
                         
-                        <div id="collapse{indicator_type}" class="collapse show" aria-labelledby="heading{indicator_type}" data-parent="#accordion">
+                        <div id="collapse{indicator_type}" class="collapse" aria-labelledby="heading{indicator_type}" data-parent="#accordion">
                             <div class="card-body">
                                 {indicator_result}
                             </div>
@@ -115,11 +122,15 @@ class IndicatorRenderer(ABC):
         )
         return self.html_output
 
+    @abstractmethod
+    def render_child(self):
+        pass
 
-class SimilarValueHTMLRenderer(IndicatorRenderer):
+
+class SimilarValuesHTMLRenderer(IndicatorRenderer):
 
     def __init__(self, indicator):
-        super(SimilarValueHTMLRenderer, self).__init__(indicator)
+        super(SimilarValuesHTMLRenderer, self).__init__(indicator)
 
     def render_child(self):
         html_output = """
@@ -134,3 +145,96 @@ class SimilarValueHTMLRenderer(IndicatorRenderer):
                         <p>______________________________________________________________________</p><br/>
             """
         return html_output
+
+
+class NullValuesHTMLRenderer(IndicatorRenderer):
+
+    def __init__(self, indicator):
+        super(NullValuesHTMLRenderer, self).__init__(indicator)
+        self.values_total = self.indicator.get_result()['values_total'],
+        self.missing_values_total = self.indicator.get_result()['missing_values_total'],
+        self.missing_values_total = self.missing_values_total[0]
+        self.missing_values_percentage = self.indicator.get_result()['missing_values_percentage'],
+        self.available_values_total = self.indicator.get_result()['available_values_total'],
+        self.available_values_total = self.available_values_total[0]
+        self.available_values_percentage = self.indicator.get_result()['available_values_percentage'],
+
+    def render_child(self):
+        html_output = """
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table" style="margin-top: 110px">
+                        <tr>
+                            <th>Werte Insgesamt: </th>
+                            <td>{values_total}</td>
+                        </tr>
+                        <tr>
+                            <th>Fehlende Werte Insgesamt: </th>
+                            <td>{missing_values_total}</td>
+                        </tr>
+                        <tr>
+                            <th>Fehlende Werte (%): </th>
+                            <td>{missing_values_percentage}</td>
+                        </tr>
+                        <tr>
+                            <th>Vorhandene Werte Insgesamt: </th>
+                            <td>{available_values_total}</td>
+                        </tr>
+                        <tr>
+                            <th>Vorhandene Werte (%)</th>
+                            <td>{available_values_percentage}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    {pie_chart}
+                </div>
+            </div>
+        """.format(
+            values_total = self.indicator.get_result()['values_total'],
+            missing_values_total = self.indicator.get_result()['missing_values_total'],
+            missing_values_percentage = self.indicator.get_result()['missing_values_percentage'],
+            available_values_total = self.indicator.get_result()['available_values_total'],
+            available_values_percentage = self.indicator.get_result()['available_values_percentage'],
+            pie_chart = PlotlyPieChartHTMLRenderer(
+                topic="nullValues",
+                attribute_name=self.indicator.attribute_name,
+                labels=['Fehlend', "Vorhanden"],
+                values=[self.missing_values_total, self.available_values_total],
+                colors=['rgb(255, 0, 0', 'rgb(0, 255, 0']
+            ).render()
+        )
+
+        return html_output
+
+
+class PlotlyPieChartHTMLRenderer:
+
+    def __init__(self, topic="", attribute_name="", labels=[], values=[], colors=[]):
+        self.topic = topic
+        self.attribute_name = attribute_name
+        self.labels = labels
+        self.values = values
+        self.colors = colors
+
+    def render(self):
+        return """
+            <div id="{topic}{attribute_name}"></div>
+            <script>
+                var data = [{{
+                    labels: {labels},
+                    values: {values},
+                    marker: {{
+                        colors: {colors}
+                    }},
+                    type: 'pie'
+                }}];
+                Plotly.newPlot('{topic}{attribute_name}', data);
+            </script>
+        """.format(
+            attribute_name = self.attribute_name,
+            topic = self.topic,
+            labels = self.labels,
+            values = self.values,
+            colors = self.colors
+        )

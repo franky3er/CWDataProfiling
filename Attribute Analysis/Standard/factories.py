@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from analyzing import AttributeAnalysis
 from indicators import *
-from renderer import SimilarValueHTMLRenderer
+from renderer import SimilarValuesHTMLRenderer, NullValuesHTMLRenderer
 
 
 #-------------------------------- Attribute Analysis Factories --------------------------------------
@@ -53,11 +53,13 @@ class JSONIndicatorFactory(IndicatorFactory):
 
     def create(self):
         indicator_name = self.json_data['indicator_name']
-        if indicator_name == 'SimilarValueIndicator':
-            return JSONSimilarValueIndicatorFactory(self.json_data, self.data_frame, self.attribute_name).create()
+        if indicator_name == 'SimilarValuesIndicator':
+            return JSONSimilarValuesIndicatorFactory(self.json_data, self.data_frame, self.attribute_name).create()
+        if indicator_name == 'NullValuesIndicator':
+            return JSONNullValuesIndicatorFactory(self.json_data, self.data_frame, self.attribute_name).create()
 
 
-class SimilarValueIndicatorFactory(ABC):
+class SimilarValuesIndicatorFactory(ABC):
 
     def __init__(self, data_frame, attribute_name, min_ratio):
         self.data_frame = data_frame
@@ -65,20 +67,42 @@ class SimilarValueIndicatorFactory(ABC):
         self.min_ratio = min_ratio
 
     def create(self):
-        return SimilarValueIndicator(
+        return SimilarValuesIndicator(
             data_frame=self.data_frame,
             attribute_name=self.attribute_name,
             min_ratio=self.min_ratio
         )
 
 
-class JSONSimilarValueIndicatorFactory(SimilarValueIndicatorFactory):
+class JSONSimilarValuesIndicatorFactory(SimilarValuesIndicatorFactory):
 
     def __init__(self, json_data, data_frame, attribute_name):
-        super(JSONSimilarValueIndicatorFactory, self).__init__(
+        super(JSONSimilarValuesIndicatorFactory, self).__init__(
             data_frame,
             attribute_name,
             json_data['indicator_config']['min_ratio']
+        )
+
+
+class NullValuesIndicatorFactory(ABC):
+
+    def __init__(self, data_frame, attribute_name):
+        self.data_frame = data_frame
+        self.attribute_name = attribute_name
+
+    def create(self):
+        return NullValuesIndicator(
+            data_frame=self.data_frame,
+            attribute_name=self.attribute_name
+        )
+
+
+class JSONNullValuesIndicatorFactory(NullValuesIndicatorFactory):
+
+    def __init__(self, json_data, data_frame, attribute_name):
+        super(JSONNullValuesIndicatorFactory, self).__init__(
+            data_frame,
+            attribute_name
         )
 
 
@@ -100,5 +124,7 @@ class IndicatorHTMLRendererFactory(IndicatorRendererFactory):
         super(IndicatorHTMLRendererFactory, self).__init__(indicator)
 
     def create(self):
-        if type(self.indicator) is SimilarValueIndicator:
-            return SimilarValueHTMLRenderer(self.indicator)
+        if type(self.indicator) is SimilarValuesIndicator:
+            return SimilarValuesHTMLRenderer(self.indicator)
+        if type(self.indicator) is NullValuesIndicator:
+            return NullValuesHTMLRenderer(self.indicator)
