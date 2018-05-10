@@ -1,0 +1,11 @@
+{
+  "attribute_name" : "Ansprechpartner_Firma",
+  "indicators" : [
+    {
+      "indicator_name" : "SimilarValueIndicator",
+      "indicator_config" : {
+        "min_ratio" : 0.85
+      }
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+CSV_FILE_PATH = "C:/TOS_DQ-20180116_1512-V6.5.1/data/Incidents_2016_2017_archiviert.csv"
+CSV_FILE_ENCODING = "utf-8"
+CSV_FILE_SEPARATOR = ";"
+ATTRIBUTE_SETTINGS_LOCATION = "./settings/attributes"
+REPORT_DIRECTORY = "./output"
