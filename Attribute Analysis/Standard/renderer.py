@@ -181,7 +181,7 @@ class NullValuesHTMLRenderer(IndicatorRenderer):
                             <td>{available_values_total}</td>
                         </tr>
                         <tr>
-                            <th>Vorhandene Werte (%)</th>
+                            <th>Vorhandene Werte (%):</th>
                             <td>{available_values_percentage}</td>
                         </tr>
                     </table>
@@ -206,6 +206,63 @@ class NullValuesHTMLRenderer(IndicatorRenderer):
         )
 
         return html_output
+
+
+class DistinctValuesHTMLRenderer(IndicatorRenderer):
+
+    def __init__(self, indicator):
+        super(DistinctValuesHTMLRenderer, self).__init__(indicator)
+        self.distinct_values_total = self.indicator.get_result()['distinct_values_total']
+        self.unique_values_total = self.indicator.get_result()['unique_values_total']
+        self.unique_values_percentage = self.indicator.get_result()['unique_values_percentage']
+        self.duplicate_values_total = self.indicator.get_result()['duplicate_values_total']
+        self.duplicate_values_percentage = self.indicator.get_result()['duplicate_values_percentage']
+
+    def render_child(self):
+        return """
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table" style="margin-top: 110px">
+                        <tr>
+                            <th>Unterschiedliche Werte Insgesamt (Distinct): </th>
+                            <td>{distinct_values_total}</td>
+                        </tr>
+                        <tr>
+                            <th>Einzigartige Werte Insgesamt (Unique): </th>
+                            <td>{unique_values_total}</td>
+                        </tr>
+                        <tr>
+                            <th>Einzigartige Werte (%): </th>
+                            <td>{unique_values_percentage}</td>
+                        </tr>
+                        <tr>
+                            <th>Duplikat Werte Insgesamt (Duplicate): </th>
+                            <td>{duplicate_values_total}</td>
+                        </tr>
+                        <tr>
+                            <th>Duplikat Werte (%):</th>
+                            <td>{duplicate_values_percentage}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    {pie_chart}
+                </div>
+            </div>
+        """.format(
+            distinct_values_total=self.distinct_values_total,
+            unique_values_total=self.unique_values_total,
+            unique_values_percentage=self.unique_values_percentage,
+            duplicate_values_total=self.duplicate_values_total,
+            duplicate_values_percentage=self.duplicate_values_percentage,
+            pie_chart=PlotlyPieChartHTMLRenderer(
+                topic="distinctValues",
+                attribute_name=self.indicator.attribute_name,
+                labels=['Einzigartig (Unique)', "Duplikate (Duplicates)"],
+                values=[self.unique_values_total, self.duplicate_values_total],
+                colors=['rgb(202, 249, 232)', 'rgb(252, 225, 129)']
+            ).render()
+        )
 
 
 class PlotlyPieChartHTMLRenderer:

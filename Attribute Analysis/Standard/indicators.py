@@ -70,3 +70,28 @@ class NullValuesIndicator(Indicator):
 
     def get_result(self):
         return self.result
+
+class DistinctValuesIndicator(Indicator):
+
+    def __init__(self, data_frame=None, attribute_name=None):
+        super(DistinctValuesIndicator, self).__init__(data_frame=data_frame, attribute_name=attribute_name)
+        self.name = "Unterschiedliche Werte"
+
+    def analyze(self):
+        distinct_values_total = self.data_frame.groupby(self.attribute_name)[self.attribute_name].nunique().sum()
+        unique_values_total = self.data_frame.groupby(self.attribute_name).filter(
+            lambda g: (g[self.attribute_name].size == 1)).shape[0]
+        duplicate_values_total = self.data_frame.groupby(self.attribute_name).filter(
+            lambda g: (g[self.attribute_name].size >= 2))[self.attribute_name].nunique()
+        unique_values_percentage = round((unique_values_total / distinct_values_total) * 100, 2)
+        duplicate_values_percentage = round((duplicate_values_total / distinct_values_total) * 100, 2)
+        self.result = {
+            'distinct_values_total' : distinct_values_total,
+            'unique_values_total' : unique_values_total,
+            'unique_values_percentage' : unique_values_percentage,
+            'duplicate_values_total' : duplicate_values_total,
+            'duplicate_values_percentage' : duplicate_values_percentage
+        }
+
+    def get_result(self):
+        return self.result

@@ -5,6 +5,9 @@
       "indicator_name" : "NullValuesIndicator"
     },
     {
+      "indicator_name" : "DistinctValuesIndicator"
+    },
+    {
       "indicator_name" : "SimilarValuesIndicator",
       "indicator_config" : {
         "min_ratio" : 0.85
