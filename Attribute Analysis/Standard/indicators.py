@@ -95,3 +95,16 @@ class DistinctValuesIndicator(Indicator):
 
     def get_result(self):
         return self.result
+
+
+class ValueRangeIndicator(Indicator):
+
+    def __init__(self, data_frame=None, attribute_name=None):
+        super(ValueRangeIndicator, self).__init__(data_frame=data_frame, attribute_name=attribute_name)
+        self.name = "Wertebereich / Wertemenge"
+
+    def analyze(self):
+        self.result = self.data_frame[self.attribute_name].value_counts()
+
+    def get_result(self):
+        return self.result

@@ -265,6 +265,43 @@ class DistinctValuesHTMLRenderer(IndicatorRenderer):
         )
 
 
+class ValueRangeHTMLRenderer(IndicatorRenderer):
+
+    def __init__(self, indicator):
+        super(ValueRangeHTMLRenderer, self).__init__(indicator)
+
+    def render_child(self):
+        return """
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Wert:</th>
+                        <th>Anzahl Vorkommnisse:</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {value_counts}
+                </tbody>
+            </table>
+        """.format(
+            value_counts = self.__render_value_counts()
+        )
+
+    def __render_value_counts(self):
+        html_output = ""
+        for value, count in self.indicator.get_result().iteritems():
+            html_output += """
+                        <tr>
+                            <td>{value}</td>
+                            <td>{count}</td>
+                        </tr>
+            """.format(
+                value=value,
+                count=count
+            )
+        return html_output
+
+
 class PlotlyPieChartHTMLRenderer:
 
     def __init__(self, topic="", attribute_name="", labels=[], values=[], colors=[]):

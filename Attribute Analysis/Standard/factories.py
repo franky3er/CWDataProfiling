@@ -1,7 +1,12 @@
 from abc import ABC, abstractmethod
 from analyzing import AttributeAnalysis
 from indicators import *
-from renderer import SimilarValuesHTMLRenderer, NullValuesHTMLRenderer, DistinctValuesHTMLRenderer
+from renderer import (
+    SimilarValuesHTMLRenderer,
+    NullValuesHTMLRenderer,
+    DistinctValuesHTMLRenderer,
+    ValueRangeHTMLRenderer
+)
 
 
 #-------------------------------- Attribute Analysis Factories --------------------------------------
@@ -59,6 +64,8 @@ class JSONIndicatorFactory(IndicatorFactory):
             return JSONNullValuesIndicatorFactory(self.json_data, self.data_frame, self.attribute_name).create()
         if indicator_name == 'DistinctValuesIndicator':
             return JSONDistinctValuesIndicatorFactory(self.json_data, self.data_frame, self.attribute_name).create()
+        if indicator_name == 'ValueRangeIndicator':
+            return JSONValueRangeIndicatorFactory(self.json_data, self.data_frame, self.attribute_name).create()
 
 
 class SimilarValuesIndicatorFactory(ABC):
@@ -130,6 +137,28 @@ class JSONDistinctValuesIndicatorFactory(DistinctValuesIndicatorFactory):
         )
 
 
+class ValueRangeIndicatorFactory(ABC):
+
+    def __init__(self, data_frame, attribute_name):
+        self.data_frame = data_frame
+        self.attribute_name = attribute_name
+
+    def create(self):
+        return ValueRangeIndicator(
+            data_frame=self.data_frame,
+            attribute_name=self.attribute_name
+        )
+
+
+class JSONValueRangeIndicatorFactory(ValueRangeIndicatorFactory):
+
+    def __init__(self, json_data, data_frame, attribute_name):
+        super(JSONValueRangeIndicatorFactory, self).__init__(
+            data_frame,
+            attribute_name
+        )
+
+
 #------------------------------ Indicator Renderer Factories --------------------------------------
 
 class IndicatorRendererFactory(ABC):
@@ -154,3 +183,5 @@ class IndicatorHTMLRendererFactory(IndicatorRendererFactory):
             return NullValuesHTMLRenderer(self.indicator)
         if type(self.indicator) is DistinctValuesIndicator:
             return DistinctValuesHTMLRenderer(self.indicator)
+        if type(self.indicator) is ValueRangeIndicator:
+            return ValueRangeHTMLRenderer(self.indicator)
