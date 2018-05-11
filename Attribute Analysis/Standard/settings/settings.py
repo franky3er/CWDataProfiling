@@ -1,4 +1,4 @@
-CSV_FILE_PATH = "C:/Data/Incidents_2016_2017_archiviert.csv"
+CSV_FILE_PATH = "/home/franky3er/Data/Incidents_2016_2017_archiviert.csv"
 CSV_FILE_ENCODING = "utf-8"
 CSV_FILE_SEPARATOR = ";"
 ATTRIBUTE_SETTINGS_LOCATION = "./settings/attributes"
