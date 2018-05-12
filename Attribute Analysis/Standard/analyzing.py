@@ -7,5 +7,3 @@ class AttributeAnalysis:
     def run(self):
         for indicator in self.indicators:
             indicator.analyze()
-            #for result in indicator.get_result():
-            #    print (result)
