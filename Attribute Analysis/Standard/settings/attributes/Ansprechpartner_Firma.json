@@ -1,5 +1,7 @@
 {
   "attribute_name" : "Ansprechpartner_Firma",
+  "dropna" : false,
+
   "indicators" : [
     {
       "indicator_name" : "NullValuesIndicator"
@@ -15,6 +17,12 @@
       "indicator_config" : {
         "min_ratio" : 0.85
       }
+    }
+  ],
+
+  "business_rules" : [
+    {
+      "business_rule_name" : "NotNullRule"
     }
   ]
 }

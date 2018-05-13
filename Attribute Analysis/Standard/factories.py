@@ -1,12 +1,8 @@
 from abc import ABC, abstractmethod
 from analyzing import AttributeAnalysis
 from indicators import *
-from renderer import (
-    SimilarValuesHTMLRenderer,
-    NullValuesHTMLRenderer,
-    DistinctValuesHTMLRenderer,
-    ValueRangeHTMLRenderer
-)
+from rules import *
+from renderer import *
 
 
 #-------------------------------- Attribute Analysis Factories --------------------------------------
@@ -19,26 +15,39 @@ class AttributeAnalysisFactory(ABC):
         pass
 
 
-class JSONAttributeAnalysisFactory(AttributeAnalysisFactory):
+class AttributeAnalysisJSONFactory(AttributeAnalysisFactory):
 
     def __init__(self, json_data, data_frame):
         self.json_data = json_data
         self.data_frame = data_frame
         self.attribute_name = self.json_data['attribute_name']
+        self.dropna = self.json_data['dropna']
 
     def create(self):
-        json_indicators_data = self.json_data['indicators']
-        return AttributeAnalysis(self.attribute_name, self.__create_indicators(json_indicators_data))
+        attribute_analysis = AttributeAnalysis(self.attribute_name, self.data_frame, dropna=self.dropna)
+        attribute_analysis = self.__append_indicators(attribute_analysis, self.json_data['indicators'])
+        attribute_analysis = self.__append_business_rules(attribute_analysis, self.json_data['business_rules'])
+        return attribute_analysis
 
-    def __create_indicators(self, json_indicators_data):
-        indicators = []
+    def __append_indicators(self, attribute_analysis, json_indicators_data):
         for json_indicator_data in json_indicators_data:
-            indicators.append(self.__create_indicator(json_indicator_data))
-        return indicators
+            attribute_analysis.add_indicator(
+                self.__create_indicator(json_indicator_data)
+            )
+        return attribute_analysis
+
+    def __append_business_rules(self, attribute_analysis, json_business_rules_data):
+        for json_business_rule_data in json_business_rules_data:
+            attribute_analysis.add_business_rule(
+                self.__create_business_rule(json_business_rule_data)
+            )
+        return attribute_analysis
 
     def __create_indicator(self, json_indicator_data):
-        return JSONIndicatorFactory(json_indicator_data, self.data_frame, self.attribute_name).create()
+        return IndicatorJSONFactory(json_indicator_data, self.data_frame, self.attribute_name).create()
 
+    def __create_business_rule(self, json_business_rule_data):
+        return BusinessRuleJSONFactory(json_business_rule_data).create()
 
 #------------------------------ Indicator Factories ----------------------------------
 
@@ -49,7 +58,7 @@ class IndicatorFactory(ABC):
         pass
 
 
-class JSONIndicatorFactory(IndicatorFactory):
+class IndicatorJSONFactory(IndicatorFactory):
 
     def __init__(self, json_data, data_frame, attribute_name):
         self.json_data = json_data
@@ -59,13 +68,13 @@ class JSONIndicatorFactory(IndicatorFactory):
     def create(self):
         indicator_name = self.json_data['indicator_name']
         if indicator_name == 'SimilarValuesIndicator':
-            return JSONSimilarValuesIndicatorFactory(self.json_data, self.data_frame, self.attribute_name).create()
+            return SimilarValuesJSONIndicatorFactory(self.json_data, self.data_frame, self.attribute_name).create()
         if indicator_name == 'NullValuesIndicator':
-            return JSONNullValuesIndicatorFactory(self.json_data, self.data_frame, self.attribute_name).create()
+            return NullValuesJSONIndicatorFactory(self.json_data, self.data_frame, self.attribute_name).create()
         if indicator_name == 'DistinctValuesIndicator':
-            return JSONDistinctValuesIndicatorFactory(self.json_data, self.data_frame, self.attribute_name).create()
+            return DistinctValuesIndicatorJSONFactory(self.json_data, self.data_frame, self.attribute_name).create()
         if indicator_name == 'ValueRangeIndicator':
-            return JSONValueRangeIndicatorFactory(self.json_data, self.data_frame, self.attribute_name).create()
+            return ValueRangeIndicatorJSONFactory(self.json_data, self.data_frame, self.attribute_name).create()
 
 
 class SimilarValuesIndicatorFactory(ABC):
@@ -83,10 +92,10 @@ class SimilarValuesIndicatorFactory(ABC):
         )
 
 
-class JSONSimilarValuesIndicatorFactory(SimilarValuesIndicatorFactory):
+class SimilarValuesJSONIndicatorFactory(SimilarValuesIndicatorFactory):
 
     def __init__(self, json_data, data_frame, attribute_name):
-        super(JSONSimilarValuesIndicatorFactory, self).__init__(
+        super(SimilarValuesJSONIndicatorFactory, self).__init__(
             data_frame,
             attribute_name,
             json_data['indicator_config']['min_ratio']
@@ -106,10 +115,10 @@ class NullValuesIndicatorFactory(ABC):
         )
 
 
-class JSONNullValuesIndicatorFactory(NullValuesIndicatorFactory):
+class NullValuesJSONIndicatorFactory(NullValuesIndicatorFactory):
 
     def __init__(self, json_data, data_frame, attribute_name):
-        super(JSONNullValuesIndicatorFactory, self).__init__(
+        super(NullValuesJSONIndicatorFactory, self).__init__(
             data_frame,
             attribute_name
         )
@@ -128,10 +137,10 @@ class DistinctValuesIndicatorFactory(ABC):
         )
 
 
-class JSONDistinctValuesIndicatorFactory(DistinctValuesIndicatorFactory):
+class DistinctValuesIndicatorJSONFactory(DistinctValuesIndicatorFactory):
 
     def __init__(self, json_data, data_frame, attribute_name):
-        super(JSONDistinctValuesIndicatorFactory, self).__init__(
+        super(DistinctValuesIndicatorJSONFactory, self).__init__(
             data_frame,
             attribute_name
         )
@@ -150,13 +159,46 @@ class ValueRangeIndicatorFactory(ABC):
         )
 
 
-class JSONValueRangeIndicatorFactory(ValueRangeIndicatorFactory):
+class ValueRangeIndicatorJSONFactory(ValueRangeIndicatorFactory):
 
     def __init__(self, json_data, data_frame, attribute_name):
-        super(JSONValueRangeIndicatorFactory, self).__init__(
+        super(ValueRangeIndicatorJSONFactory, self).__init__(
             data_frame,
             attribute_name
         )
+
+
+#------------------------------Business Rule Factories-------------------------------------------
+
+class BusinessRuleFactory(ABC):
+
+    @abstractmethod
+    def create(self):
+        pass
+
+
+class BusinessRuleJSONFactory(BusinessRuleFactory):
+
+    def __init__(self, json_data):
+        self.json_data = json_data
+
+    def create(self):
+        business_rule_name = self.json_data['business_rule_name']
+        if business_rule_name == 'NotNullRule':
+            return NotNullRuleJSONFactory().create()
+
+
+class NotNullRuleFactory(ABC):
+
+    @abstractmethod
+    def create(self):
+        pass
+
+
+class NotNullRuleJSONFactory(NotNullRuleFactory):
+
+    def create(self):
+        return NotNullRule()
 
 
 #------------------------------ Indicator Renderer Factories --------------------------------------

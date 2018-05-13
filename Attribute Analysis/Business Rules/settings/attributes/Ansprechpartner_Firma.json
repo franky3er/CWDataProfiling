@@ -1,8 +1,0 @@
-{
-  "attribute_name" : "Ansprechpartner_Firma",
-  "business_rules" : [
-    {
-      "business_rule" : "NotNullRule"
-    }
-  ]
-}
