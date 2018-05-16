@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from difflib import SequenceMatcher
+import operator
 
 class Indicator(ABC):
 
@@ -108,3 +109,37 @@ class ValueRangeIndicator(Indicator):
 
     def get_result(self):
         return self.result
+
+
+class PatternFrequencyIndicator(Indicator):
+
+    def __init__(self, data_frame=None, attribute_name=None):
+        super(PatternFrequencyIndicator, self).__init__(data_frame=data_frame, attribute_name=attribute_name)
+        self.name = "Muster Frequenz"
+        self.result = {}
+
+    def analyze(self):
+        for value, cnt in self.data_frame[self.attribute_name].value_counts().iteritems():
+            value_pattern = self.__get_value_pattern(str(value))
+            if value_pattern in self.result:
+                self.result[value_pattern] += cnt
+            else:
+                self.result[value_pattern] = cnt
+
+        self.sorted_result_tuple = sorted(self.result.items(), key=operator.itemgetter(1))
+
+    def __get_value_pattern(self, value):
+        value_pattern = ''
+        for char in value:
+            if char.istitle():
+                value_pattern += 'A'
+            elif char.isalpha():
+                value_pattern += 'a'
+            elif char.isdigit():
+                value_pattern += '9'
+            else:
+                value_pattern += char
+        return value_pattern
+
+    def get_result(self):
+        return self.sorted_result_tuple

@@ -1,0 +1,42 @@
+{
+  "attribute_name" : "Priority_de",
+  "dropna" : false,
+
+  "indicators" : [
+    {
+      "indicator_name" : "NullValuesIndicator"
+    },
+    {
+      "indicator_name" : "DistinctValuesIndicator"
+    },
+    {
+      "indicator_name" : "ValueRangeIndicator"
+    },
+    {
+      "indicator_name" : "PatternFrequencyIndicator"
+    }
+  ],
+
+  "business_rules" : [
+    {
+      "business_rule_name" : "NotNullRule"
+    },
+    {
+      "business_rule_name" : "RegExPatternMatchingRule",
+      "business_rule_config" : {
+        "pattern" : "^[0-9] - [A-Z][a-z]+$"
+      }
+    },
+    {
+      "business_rule_name" : "DomainListMatchingRule",
+      "business_rule_config" : {
+        "values" : [
+          "4 - Low",
+          "3 - Medium",
+          "2 - High",
+          "1 - Emergency"
+        ]
+      }
+    }
+  ]
+}
