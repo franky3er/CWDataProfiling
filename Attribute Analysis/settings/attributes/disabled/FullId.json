@@ -1,0 +1,26 @@
+{
+  "attribute_name" : "FullId",
+  "dropna" : false,
+
+  "indicators" : [
+    {
+      "indicator_name" : "NullValuesIndicator"
+    },
+    {
+      "indicator_name" : "DistinctValuesIndicator"
+    }
+
+  ],
+
+  "business_rules" : [
+    {
+      "business_rule_name" : "NotNullRule"
+    },
+    {
+      "business_rule_name" : "RegExPatternMatchingRule",
+      "business_rule_config" : {
+        "pattern" : "^IN[0-9]{7}$"
+      }
+    }
+  ]
+}

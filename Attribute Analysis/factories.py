@@ -66,15 +66,19 @@ class IndicatorJSONFactory(IndicatorFactory):
         self.attribute_name = attribute_name
 
     def create(self):
-        indicator_name = self.json_data['indicator_name']
-        if indicator_name == 'SimilarValuesIndicator':
-            return SimilarValuesJSONIndicatorFactory(self.json_data, self.data_frame, self.attribute_name).create()
-        if indicator_name == 'NullValuesIndicator':
-            return NullValuesJSONIndicatorFactory(self.json_data, self.data_frame, self.attribute_name).create()
-        if indicator_name == 'DistinctValuesIndicator':
-            return DistinctValuesIndicatorJSONFactory(self.json_data, self.data_frame, self.attribute_name).create()
-        if indicator_name == 'ValueRangeIndicator':
-            return ValueRangeIndicatorJSONFactory(self.json_data, self.data_frame, self.attribute_name).create()
+        indicator_factories = {
+            'SimilarValuesIndicator' : SimilarValuesIndicatorJSONFactory,
+            'NullValuesIndicator' : NullValuesIndicatorJSONFactory,
+            'DistinctValuesIndicator' : DistinctValuesIndicatorJSONFactory,
+            'ValueRangeIndicator' : ValueRangeIndicatorJSONFactory,
+            'PatternFrequencyIndicator' : PatternFrequencyIndicatorJSONFactory
+        }
+
+        return indicator_factories[self.json_data['indicator_name']](
+            self.json_data,
+            self.data_frame,
+            self.attribute_name
+        ).create()
 
 
 class SimilarValuesIndicatorFactory(ABC):
@@ -92,14 +96,20 @@ class SimilarValuesIndicatorFactory(ABC):
         )
 
 
-class SimilarValuesJSONIndicatorFactory(SimilarValuesIndicatorFactory):
+class SimilarValuesIndicatorJSONFactory(SimilarValuesIndicatorFactory):
 
     def __init__(self, json_data, data_frame, attribute_name):
-        super(SimilarValuesJSONIndicatorFactory, self).__init__(
-            data_frame,
-            attribute_name,
-            json_data['indicator_config']['min_ratio']
+        self.json_data = json_data
+        self.data_frame = data_frame
+        self.attribute_name = attribute_name
+
+    def create(self):
+        super(SimilarValuesIndicatorJSONFactory, self).__init__(
+            self.data_frame,
+            self.attribute_name,
+            self.json_data['indicator_config']['min_ratio']
         )
+        return super(SimilarValuesIndicatorJSONFactory, self).create()
 
 
 class NullValuesIndicatorFactory(ABC):
@@ -115,13 +125,19 @@ class NullValuesIndicatorFactory(ABC):
         )
 
 
-class NullValuesJSONIndicatorFactory(NullValuesIndicatorFactory):
+class NullValuesIndicatorJSONFactory(NullValuesIndicatorFactory):
 
     def __init__(self, json_data, data_frame, attribute_name):
-        super(NullValuesJSONIndicatorFactory, self).__init__(
-            data_frame,
-            attribute_name
+        self.json_data = json_data
+        self.data_frame = data_frame
+        self.attribute_name = attribute_name
+
+    def create(self):
+        super(NullValuesIndicatorJSONFactory, self).__init__(
+            self.data_frame,
+            self.attribute_name
         )
+        return super(NullValuesIndicatorJSONFactory, self).create()
 
 
 class DistinctValuesIndicatorFactory(ABC):
@@ -140,10 +156,16 @@ class DistinctValuesIndicatorFactory(ABC):
 class DistinctValuesIndicatorJSONFactory(DistinctValuesIndicatorFactory):
 
     def __init__(self, json_data, data_frame, attribute_name):
+        self.json_data = json_data
+        self.data_frame = data_frame
+        self.attribute_name = attribute_name
+
+    def create(self):
         super(DistinctValuesIndicatorJSONFactory, self).__init__(
-            data_frame,
-            attribute_name
+            self.data_frame,
+            self.attribute_name
         )
+        return super(DistinctValuesIndicatorJSONFactory, self).create()
 
 
 class ValueRangeIndicatorFactory(ABC):
@@ -162,10 +184,44 @@ class ValueRangeIndicatorFactory(ABC):
 class ValueRangeIndicatorJSONFactory(ValueRangeIndicatorFactory):
 
     def __init__(self, json_data, data_frame, attribute_name):
+        self.json_data = json_data
+        self.data_frame = data_frame
+        self.attribute_name = attribute_name
+
+    def create(self):
         super(ValueRangeIndicatorJSONFactory, self).__init__(
-            data_frame,
-            attribute_name
+            self.data_frame,
+            self.attribute_name
         )
+        return super(ValueRangeIndicatorJSONFactory, self).create()
+
+
+class PatternFrequencyIndicatorFactory(ABC):
+
+    def __init__(self, data_frame, attribute_name):
+        self.data_frame = data_frame
+        self.attribute_name = attribute_name
+
+    def create(self):
+        return PatternFrequencyIndicator(
+            data_frame=self.data_frame,
+            attribute_name=self.attribute_name
+        )
+
+
+class PatternFrequencyIndicatorJSONFactory(PatternFrequencyIndicatorFactory):
+
+    def __init__(self, json_data, data_frame, attribute_name):
+        self.json_data = json_data
+        self.data_frame = data_frame
+        self.attribute_name = attribute_name
+
+    def create(self):
+        super(PatternFrequencyIndicatorJSONFactory, self).__init__(
+            self.data_frame,
+            self.attribute_name
+        )
+        return super(PatternFrequencyIndicatorJSONFactory, self).create()
 
 
 #------------------------------Business Rule Factories-------------------------------------------
@@ -183,22 +239,66 @@ class BusinessRuleJSONFactory(BusinessRuleFactory):
         self.json_data = json_data
 
     def create(self):
-        business_rule_name = self.json_data['business_rule_name']
-        if business_rule_name == 'NotNullRule':
-            return NotNullRuleJSONFactory().create()
+        business_rule_factories = {
+            'NotNullRule' : NotNullRuleJSONFactory,
+            'RegExPatternMatchingRule' : RegExPatternMatchingRuleJSONFactory,
+            'DomainListMatchingRule' : DomainListMatchingRuleJSONFactory,
+        }
 
+        return business_rule_factories.get(self.json_data['business_rule_name'])(
+            self.json_data
+        ).create()
 
-class NotNullRuleFactory(ABC):
+class NotNullRuleFactory(BusinessRuleFactory):
 
-    @abstractmethod
-    def create(self):
+    def __init__(self):
         pass
+
+    def create(self):
+        return NotNullRule()
 
 
 class NotNullRuleJSONFactory(NotNullRuleFactory):
 
+    def __init__(self, json_data):
+        super(NotNullRuleJSONFactory, self).__init__()
+
+
+
+class RegExPatternMatchingRuleFactory(BusinessRuleFactory):
+
+    def __init__(self, pattern):
+        self.pattern = pattern
+
     def create(self):
-        return NotNullRule()
+        return RegExPatternMatchingRule(pattern=self.pattern)
+
+
+class RegExPatternMatchingRuleJSONFactory(RegExPatternMatchingRuleFactory):
+
+    def __init__(self, json_data):
+        self.json_data = json_data
+        super(RegExPatternMatchingRuleJSONFactory, self).__init__(
+            self.json_data['business_rule_config']['pattern']
+        )
+
+
+class DomainListMatchingRuleFactory(BusinessRuleFactory):
+
+    def __init__(self, values):
+        self.values = values
+
+    def create(self):
+        return DomainListMatchingRule(self.values)
+
+
+class DomainListMatchingRuleJSONFactory(DomainListMatchingRuleFactory):
+
+    def __init__(self, json_data):
+        self.json_data = json_data
+        super(DomainListMatchingRuleJSONFactory, self).__init__(
+            self.json_data['business_rule_config']['values']
+        )
 
 
 #------------------------------ Indicator Renderer Factories --------------------------------------
@@ -219,11 +319,12 @@ class IndicatorHTMLRendererFactory(IndicatorRendererFactory):
         super(IndicatorHTMLRendererFactory, self).__init__(indicator)
 
     def create(self):
-        if type(self.indicator) is SimilarValuesIndicator:
-            return SimilarValuesHTMLRenderer(self.indicator)
-        if type(self.indicator) is NullValuesIndicator:
-            return NullValuesHTMLRenderer(self.indicator)
-        if type(self.indicator) is DistinctValuesIndicator:
-            return DistinctValuesHTMLRenderer(self.indicator)
-        if type(self.indicator) is ValueRangeIndicator:
-            return ValueRangeHTMLRenderer(self.indicator)
+        indicator_html_renderer = {
+            SimilarValuesIndicator : SimilarValuesHTMLRenderer,
+            NullValuesIndicator : NullValuesHTMLRenderer,
+            DistinctValuesIndicator : DistinctValuesHTMLRenderer,
+            ValueRangeIndicator : ValueRangeHTMLRenderer,
+            PatternFrequencyIndicator : PatternFrequencyHTMLRenderer
+        }
+
+        return indicator_html_renderer.get(type(self.indicator))(self.indicator)

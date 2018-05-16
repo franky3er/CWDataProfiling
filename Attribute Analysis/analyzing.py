@@ -16,14 +16,18 @@ class AttributeAnalysis:
         self.business_rules.append(business_rule)
 
     def run(self):
+        print("Run Analysis: '{}'".format(self.attribute_name))
         self.run_indicator_analysis()
         self.run_business_rules_analysis()
 
     def run_indicator_analysis(self):
+        print("     Run Indicator Analysis...")
         for indicator in self.indicators:
+            print("          {}".format(indicator.__class__.__name__))
             indicator.analyze()
 
     def run_business_rules_analysis(self):
+        print("     Run Business-Rule Analysis...")
         for index, data_set in self.data_frame.iterrows():
             if self.dropna and data_set[self.attribute_name].isnull():
                 continue

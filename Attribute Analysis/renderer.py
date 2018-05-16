@@ -24,6 +24,7 @@ class AttributeAnalysisHTMLRenderer(AttributeAnalysisRenderer):
         os.makedirs(os.path.dirname(self.output_file_path), exist_ok=True)
 
     def render(self):
+        print("     Render Result")
         self.__render_header()
         self.__render_indicators()
         self.__render_business_rules()
@@ -72,6 +73,7 @@ class AttributeAnalysisHTMLRenderer(AttributeAnalysisRenderer):
         )
 
     def __render_indicators(self):
+        print("          Indicators")
         from factories import IndicatorHTMLRendererFactory
         self.html_output += """
                         <h3>Standard-Analyse:</h3>
@@ -85,6 +87,7 @@ class AttributeAnalysisHTMLRenderer(AttributeAnalysisRenderer):
         """
 
     def __render_business_rules(self):
+        print("          Business Rules")
         self.html_output += BusinessRulesHTMLRenderer(self.attribute_analysis).render()
 
     def __render_footer(self):
@@ -113,7 +116,7 @@ class IndicatorRenderer(ABC):
                                     </h5>
                                 </div>
                                 
-                                <div id="collapse{indicator_type}" class="collapse" aria-labelledby="heading{indicator_type}" data-parent="#accordion">
+                                <div id="collapse{indicator_type}" class="collapse" aria-labelledby="heading{indicator_type}" >
                                     <div class="card-body">
                                         {indicator_result}
                                     </div>
@@ -276,19 +279,28 @@ class ValueRangeHTMLRenderer(IndicatorRenderer):
 
     def render_child(self):
         return """
-                                <table class="table table-striped">
-                                    <thead class="thead-dark">
-                                        <tr>
-                                            <th>Wert:</th>
-                                            <th>Anzahl Vorkommnisse:</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {value_counts}
-                                    </tbody>
-                                </table>
+                                <div class="row">
+                                    <div class="col">
+                                        <table class="table table-striped">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                    <th>Wert</th>
+                                                    <th>Häufigkeit</th>
+                                                    <th>Relative Häufigkeit (%)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {value_counts}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col">
+                                        {pie_chart}
+                                    </div>
+                                </div>
         """.format(
-            value_counts = self.__render_value_counts()
+            value_counts = self.__render_value_counts(),
+            pie_chart = self.__render_pie_chart()
         )
 
     def __render_value_counts(self):
@@ -298,12 +310,88 @@ class ValueRangeHTMLRenderer(IndicatorRenderer):
                                             <tr>
                                                 <td>{value}</td>
                                                 <td>{count}</td>
+                                                <td>{count_percentage}</td>
                                             </tr>
             """.format(
                 value=value,
-                count=count
+                count=count,
+                count_percentage=round((count / len(self.indicator.data_frame[self.indicator.attribute_name])) * 100, 2)
             )
         return html_output
+
+    def __render_pie_chart(self):
+        values = list(dict(self.indicator.get_result()).keys())
+        frequencies = list(dict(self.indicator.get_result()).values())
+
+        return PlotlyPieChartHTMLRenderer(
+            topic="valueFrequency",
+            attribute_name=self.indicator.attribute_name,
+            labels=values,
+            values=frequencies,
+            colors=None
+        ).render()
+
+
+class PatternFrequencyHTMLRenderer(IndicatorRenderer):
+
+    def __init__(self, indicator):
+        super(PatternFrequencyHTMLRenderer, self).__init__(indicator)
+        self.result = self.indicator.get_result()
+
+
+    def render_child(self):
+        return """
+                                <div class="row">
+                                    <div class="col">
+                                        <table class="table table-striped">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                    <th>Muster</th>
+                                                    <th>Häufigkeit</th>
+                                                    <th>Relative Häufigkeit (%)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {pattern_frequencies}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col">
+                                        {pie_chart}
+                                    </div>
+                                </div>
+        """.format(
+            pattern_frequencies = self.__render_pattern_frequencies(),
+            pie_chart = self.__render_pie_chart()
+        )
+
+    def __render_pattern_frequencies(self):
+        html_output = ""
+        for pattern, frequency in reversed(self.result):
+            html_output += """
+                                            <tr>
+                                                <td>{pattern}</td>
+                                                <td>{frequency}</td>
+                                                <td>{frequency_percentage}</td>
+                                            </tr>
+            """.format(
+                pattern = pattern,
+                frequency = frequency,
+                frequency_percentage = round((frequency / len(self.indicator.data_frame[self.indicator.attribute_name])) * 100, 2)
+            )
+        return html_output
+
+    def __render_pie_chart(self):
+        patterns = [pattern_frequency[0] for pattern_frequency in self.result]
+        frequencies = [pattern_frequency[1] for pattern_frequency in self.result]
+
+        return PlotlyPieChartHTMLRenderer(
+            topic="patternFrequency",
+            attribute_name=self.indicator.attribute_name,
+            labels=patterns,
+            values=frequencies,
+            colors=None
+        ).render()
 
 
 class BusinessRulesRenderer(ABC):
@@ -325,10 +413,12 @@ class BusinessRulesHTMLRenderer(BusinessRulesRenderer):
     def render(self):
         self.html_output += """
                                 <h3>Geschäftsregel-Analyse:</h3>
-                                {business_rule_metadata}
+                                {business_rules_metadata}
+                                {business_rules_result_overview}
                                 {invalid_rows}
                 """.format(
-            business_rule_metadata=self.__render_business_rules_metadata(),
+            business_rules_metadata=self.__render_business_rules_metadata(),
+            business_rules_result_overview=self.__render_business_rules_result_overview(),
             invalid_rows=self.__render_invalid_data_sets()
         )
 
@@ -352,20 +442,45 @@ class BusinessRulesHTMLRenderer(BusinessRulesRenderer):
                                 <td>{business_rule_desciption}</td>
                             </tr>
             """.format(
-                business_rule_id=business_rule.id,
+                business_rule_id=business_rule.__class__.__name__,
                 business_rule_name=business_rule.name,
-                business_rule_desciption=business_rule.description
+                business_rule_desciption=business_rule.get_description()
             )
         business_rule_metadata += """
                         </table>
         """
         return business_rule_metadata
 
+    def __render_business_rules_result_overview(self):
+        invalid_data_sets_cnt = len(self.attribute_analysis.invalid_data_sets_results)
+        valid_data_sets_cnt = len(self.attribute_analysis.data_frame[self.attribute_analysis.attribute_name])
+        return """
+                        <h5>Ergebnissübersicht:</h5>
+                        <div class="row">
+                            <div class="col-md-5">
+                                {pie_chart}
+                            </div>
+                        </div>
+        """.format(
+            pie_chart=PlotlyPieChartHTMLRenderer(
+                topic="business_rules_result_overview",
+                attribute_name=self.attribute_analysis.attribute_name,
+                labels=['Entsprechen nicht den Geschäftsregeln', "Entsprechen den Geschäftsregeln"],
+                values=[invalid_data_sets_cnt, valid_data_sets_cnt],
+                colors=['rgb(255, 0, 0', 'rgb(0, 255, 0']
+            ).render()
+        )
+
     def __render_invalid_data_sets(self):
         invalid_data_sets = """
                         <h5>Invalide Datensätze:</h5>
                         <div id="accordionInvalidRows">
-        """
+                        {invalid_data_sets_cnt}
+        """.format(
+            invalid_data_sets_cnt = "{} invalide Datensätze gefunden".format(
+                str(len(self.attribute_analysis.invalid_data_sets_results))
+            )
+        )
 
         for index, results in self.attribute_analysis.invalid_data_sets_results.items():
             invalid_data_sets += self.__render_invalid_data_set(index, results)
@@ -387,7 +502,7 @@ class BusinessRulesHTMLRenderer(BusinessRulesRenderer):
                                     </h5>
                                 </div>
                                     
-                                <div id="collapseInvalidRow{index}" class="collapse" aria-labelledby="headingInvalidRow{index}" data-parent="#accordionInvalidRows">
+                                <div id="collapseInvalidRow{index}" class="collapse" aria-labelledby="headingInvalidRow{index}">
                                     <div class="card-body">
                                         <table class="table">
                                             <tr>
@@ -407,7 +522,7 @@ class BusinessRulesHTMLRenderer(BusinessRulesRenderer):
                                                 <td>{valid}</td>
                                             </tr>
             """.format(
-                business_rule_description=business_rule.description,
+                business_rule_description=business_rule.get_description(),
                 valid= """<div class="alert alert-success">JA</div>""" if valid else """<div class="alert alert-danger">NEIN</div>"""
             )
 
@@ -437,9 +552,7 @@ class PlotlyPieChartHTMLRenderer:
                                                     var data = [{{
                                                         labels: {labels},
                                                         values: {values},
-                                                        marker: {{
-                                                            colors: {colors}
-                                                        }},
+                                                        {colors}
                                                         type: 'pie'
                                                     }}];
                                                     Plotly.newPlot('{topic}{attribute_name}', data);
@@ -449,5 +562,14 @@ class PlotlyPieChartHTMLRenderer:
             topic = self.topic,
             labels = self.labels,
             values = self.values,
+            colors = self.__render_colors() if self.colors else ""
+        )
+
+    def __render_colors(self):
+        return """
+                                                        marker: {{
+                                                            colors: {colors}
+                                                        }},
+        """.format(
             colors = self.colors
         )
