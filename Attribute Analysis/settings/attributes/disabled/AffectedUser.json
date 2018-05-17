@@ -1,0 +1,38 @@
+{
+  "attribute_name" : "AffectedUser",
+  "dropna" : false,
+
+  "indicators" : [
+    {
+      "indicator_name" : "NullValuesIndicator"
+    },
+    {
+      "indicator_name" : "DistinctValuesIndicator"
+    },
+    {
+      "indicator_name" : "ValueRangeIndicator"
+    },
+    {
+      "indicator_name" : "SimilarValuesIndicator",
+      "indicator_config" : {
+        "min_ratio" : 0.85
+      }
+    },
+    {
+      "indicator_name" : "PatternFrequencyIndicator"
+    }
+
+  ],
+
+  "business_rules" : [
+    {
+      "business_rule_name" : "NotNullRule"
+    },
+    {
+      "business_rule_name" : "RegExPatternMatchingRule",
+      "business_rule_config" : {
+        "pattern" : "^\\p{Lu}\\p{Ll}+(-\\p{Lu}\\p{Ll}+)* \\p{Lu}\\p{Ll}+(-\\p{Lu}\\p{Ll}+)*( \\p{Lu}\\p{Ll}+(-\\p{Lu}\\p{Ll}+)*)*$"
+      }
+    }
+  ]
+}

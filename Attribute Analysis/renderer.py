@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 import datetime
 import os
-import regex as re
 
 class AttributeAnalysisRenderer(ABC):
 
@@ -597,7 +596,6 @@ class BusinessRulesHTMLRenderer(BusinessRulesRenderer):
                                     
                                 <div id="collapseInvalidValue{value_id}" class="collapse" aria-labelledby="headingInvalidValue{value_id}">
                                     <div class="card-body">
-                                        <p>{count} betroffene Datensätze</p>
                                         <table class="table">
                                             <tr>
                                                 <th>Geschäftsregel</th>
@@ -607,7 +605,6 @@ class BusinessRulesHTMLRenderer(BusinessRulesRenderer):
         """.format(
             value=value,
             value_id=value_idx,
-            count=results['count']
         )
 
         for business_rule, valid in results['result'].items():
@@ -623,10 +620,15 @@ class BusinessRulesHTMLRenderer(BusinessRulesRenderer):
 
         invalid_data_set += """
                                         </table>
+                                        <h6><b>{count}</b> betroffene Datensätze:</h6>
+                                        <p>{data_sets_indexes}</p>
                                     </div>
                                 </div>
                             </div>
-        """
+        """.format(
+            count=results['count'],
+            data_sets_indexes=list(results['data_sets'].index.values)
+        )
 
         return invalid_data_set
 

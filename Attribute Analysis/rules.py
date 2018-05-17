@@ -36,7 +36,7 @@ class RegExPatternMatchingRule(BusinessRule):
         self.regex = re.compile(self.pattern)
 
     def is_valid(self, value):
-        return self.regex.match(value)
+        return self.regex.match(str(value))
 
     def get_description(self):
         return "Wert muss Regulärem Ausdruck '{regex}' entsprechen".format(
