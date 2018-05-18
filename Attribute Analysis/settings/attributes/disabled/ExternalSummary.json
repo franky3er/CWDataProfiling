@@ -1,0 +1,23 @@
+{
+  "attribute_name" : "ExternalSummary",
+  "dropna" : false,
+
+  "indicators" : [
+    {
+      "indicator_name" : "NullValuesIndicator"
+    },
+    {
+      "indicator_name" : "DistinctValuesIndicator"
+    },
+    {
+      "indicator_name" : "ValueRangeIndicator"
+    }
+
+  ],
+
+  "business_rules" : [
+    {
+      "business_rule_name" : "NotNullRule"
+    }
+  ]
+}

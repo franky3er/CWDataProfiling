@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "CreatorUser",
+  "attribute_name" : "LastTicketModification",
   "dropna" : false,
 
   "indicators" : [
@@ -10,16 +10,10 @@
       "indicator_name" : "DistinctValuesIndicator"
     },
     {
-      "indicator_name" : "ValueRangeIndicator"
-    },
-    {
-      "indicator_name" : "SimilarValuesIndicator",
-      "indicator_config" : {
-        "min_ratio" : 0.85
-      }
-    },
-    {
       "indicator_name" : "PatternFrequencyIndicator"
+    },
+    {
+      "indicator_name" : "ValueRangeIndicator"
     }
 
   ],
@@ -31,7 +25,7 @@
     {
       "business_rule_name" : "RegExPatternMatchingRule",
       "business_rule_config" : {
-        "pattern" : "^\\p{Lu}\\p{Ll}+ \\p{Lu}\\p{Ll}+( \\p{Lu}\\p{Ll}+)*$"
+        "pattern" : "^(([0-9]{4}-[0-9]{1,2})-([0-9]{1,2})) (([01][0-9]|[2][0-3]):([0-5][0-9]):[0-5][0-9].[0-9]{9})$"
       }
     }
   ]

@@ -417,105 +417,197 @@ class BusinessRulesHTMLRenderer(BusinessRulesRenderer):
                                 {business_rules_result_overview}
                                 {invalid_rows}
                 """.format(
-            business_rules_metadata=self.__render_business_rules_metadata(),
-            business_rules_result_overview=self.__render_business_rules_result_overview(),
+            business_rules_metadata=self.__render_business_rules_result_overview_metadata(),
+            business_rules_result_overview=self.__render_business_rules_result_overview_pie_charts(),
             invalid_rows=self.__render_invalid_data_sets()
         )
 
         return self.html_output
 
-    def __render_business_rules_metadata(self):
+    def __render_business_rules_result_overview_metadata(self):
         business_rule_metadata = """
-                        <h5>Geschäftsregeln:</h5>
+                        <h5>Ergebnissübersicht:</h5>
                         <table class="table">
                             <tr>
                                 <th>Id</th>
                                 <th>Name</th>
                                 <th>Beschreibung</th>
+                                <th>Valide Werte</th>
+                                <th>Valide Werte (%)</th>
+                                <th>Invalide Werte</th>
+                                <th>Invalide Werte (%)</th>
                             </tr>
         """
         for business_rule in self.attribute_analysis.business_rules:
+            business_rule_id = business_rule.__class__.__name__
+            business_rule_valid_values_count = (
+                self.attribute_analysis.business_rules_results['valid'][business_rule_id]['count']
+            )
+            business_rule_invalid_values_count = (
+                self.attribute_analysis.business_rules_results['invalid'][business_rule_id]['count']
+            )
+            values_total = business_rule_valid_values_count + business_rule_invalid_values_count
+            business_rule_valid_values_percentage = round((business_rule_valid_values_count / values_total) * 100, 2)
+            business_rule_invalid_values_percentage = round((business_rule_invalid_values_count / values_total) * 100, 2)
             business_rule_metadata += """
                             <tr>
                                 <td>{business_rule_id}</td>
                                 <td>{business_rule_name}</td>
                                 <td>{business_rule_desciption}</td>
+                                <td>{business_rule_valid_values_count}</td>
+                                <td>{business_rule_valid_values_percentage}</td>
+                                <td>{business_rule_invalid_values_count}</td>
+                                <td>{business_rule_invalid_values_percentage}</td>
                             </tr>
             """.format(
                 business_rule_id=business_rule.__class__.__name__,
                 business_rule_name=business_rule.name,
-                business_rule_desciption=business_rule.get_description()
+                business_rule_desciption=business_rule.get_description(),
+                business_rule_valid_values_count=business_rule_valid_values_count,
+                business_rule_valid_values_percentage=business_rule_valid_values_percentage,
+                business_rule_invalid_values_count=business_rule_invalid_values_count,
+                business_rule_invalid_values_percentage=business_rule_invalid_values_percentage
             )
+
+        business_rule_id = business_rule.__class__.__name__
+        business_rule_valid_values_count = (
+            self.attribute_analysis.business_rules_results['valid']['overall']['count']
+        )
+        business_rule_invalid_values_count = (
+            self.attribute_analysis.business_rules_results['invalid']['overall']['count']
+        )
+        values_total = business_rule_valid_values_count + business_rule_invalid_values_count
+        business_rule_valid_values_percentage = round((business_rule_valid_values_count / values_total) * 100, 2)
+        business_rule_invalid_values_percentage = round((business_rule_invalid_values_count / values_total) * 100, 2)
         business_rule_metadata += """
+                            <tr>
+                                <td>Overall</td>
+                                <td>Alle Geschäftsregeln</td>
+                                <td>Übereinstimmung von allen Geschäftsregeln</td>
+                                <td>{business_rule_valid_values_count}</td>
+                                <td>{business_rule_valid_values_percentage}</td>
+                                <td>{business_rule_invalid_values_count}</td>
+                                <td>{business_rule_invalid_values_percentage}</td>
+                            </tr>
                         </table>
-        """
+        """.format(
+            business_rule_valid_values_count=business_rule_valid_values_count,
+            business_rule_valid_values_percentage=business_rule_valid_values_percentage,
+            business_rule_invalid_values_count=business_rule_invalid_values_count,
+            business_rule_invalid_values_percentage=business_rule_invalid_values_percentage
+        )
         return business_rule_metadata
 
-    def __render_business_rules_result_overview(self):
-        invalid_data_sets_cnt = len(self.attribute_analysis.invalid_data_sets_results)
-        valid_data_sets_cnt = len(self.attribute_analysis.data_frame[self.attribute_analysis.attribute_name])
-        return """
-                        <h5>Ergebnissübersicht:</h5>
+    def __render_business_rules_result_overview_pie_charts(self):
+        number_of_pie_charts = len(self.attribute_analysis.business_rules) + 1
+        html_output = """
                         <div class="row">
-                            <div class="col-md-5">
-                                {pie_chart}
+                            <div class="col">
+                                {pie_chart_overall}
                             </div>
-                        </div>
         """.format(
-            pie_chart=PlotlyPieChartHTMLRenderer(
-                topic="business_rules_result_overview",
+            pie_chart_overall=PlotlyPieChartHTMLRenderer(
+                title="Overall",
+                topic="business_rules_result_overview_overall",
                 attribute_name=self.attribute_analysis.attribute_name,
-                labels=['Entsprechen nicht den Geschäftsregeln', "Entsprechen den Geschäftsregeln"],
-                values=[invalid_data_sets_cnt, valid_data_sets_cnt],
-                colors=['rgb(255, 0, 0', 'rgb(0, 255, 0']
+                labels=['valide', "invalide"],
+                values=[
+                    self.attribute_analysis.business_rules_results['invalid']['overall']['count'],
+                    self.attribute_analysis.business_rules_results['valid']['overall']['count'],
+                ],
+                colors=['rgb(255, 0, 0', 'rgb(0, 255, 0'],
+                num_charts=number_of_pie_charts,
+                width_by_num_charts=True
             ).render()
         )
 
+        for business_rule in self.attribute_analysis.business_rules:
+            business_rule_id = business_rule.__class__.__name__
+            html_output += """
+                            <div class="col">
+                                {pie_chart_business_rule}
+                            </div>
+            """.format(
+                pie_chart_business_rule=PlotlyPieChartHTMLRenderer(
+                    title=business_rule_id,
+                    topic="business_rules_result_overview_{}".format(business_rule_id),
+                    attribute_name=self.attribute_analysis.attribute_name,
+                    labels=['invalide', 'valide'],
+                    values=[
+                        self.attribute_analysis.business_rules_results['invalid'][business_rule_id]['count'],
+                        self.attribute_analysis.business_rules_results['valid'][business_rule_id]['count'],
+                    ],
+                    colors=['rgb(255, 0, 0', 'rgb(0, 255, 0'],
+                    num_charts=number_of_pie_charts,
+                    width_by_num_charts=True
+            ).render()
+            )
+
+        html_output += """
+                        </div>
+        """
+
+        return html_output
+
+
+
     def __render_invalid_data_sets(self):
+        pass
         invalid_data_sets = """
-                        <h5>Invalide Datensätze:</h5>
-                        <div id="accordionInvalidRows">
-                        {invalid_data_sets_cnt}
+                        <h5>Invalide Werte:</h5>
+                        <div id="accordionInvalidValues">
+                        <p>{invalid_data_sets_cnt}</p>
+                        <p>{invalid_values_cnt}</p>
         """.format(
-            invalid_data_sets_cnt = "{} invalide Datensätze gefunden".format(
-                str(len(self.attribute_analysis.invalid_data_sets_results))
+            invalid_data_sets_cnt = "<b>{}</b> invalide Datensätze gefunden von <b>{}</b> Datensätzen insgesamt".format(
+                str(self.attribute_analysis.business_rules_results['invalid']['overall']['count']),
+                str(len(self.attribute_analysis.data_frame[self.attribute_analysis.attribute_name]))
+            ),
+            invalid_values_cnt = "<b>{}</b> invalide Werte gefunden von <b>{}</b> unterschiedlichen Werten insgesamt".format(
+                str(len(self.attribute_analysis.business_rules_results['invalid']['overall']['values']))
+                if 'values' in self.attribute_analysis.business_rules_results['invalid']['overall'] else 0,
+                self.attribute_analysis.data_frame.groupby(
+                    self.attribute_analysis.attribute_name)[self.attribute_analysis.attribute_name].nunique(
+                    dropna=False
+                ).sum()
             )
         )
-
-        for index, results in self.attribute_analysis.invalid_data_sets_results.items():
-            invalid_data_sets += self.__render_invalid_data_set(index, results)
+        if 'values' in self.attribute_analysis.business_rules_results['invalid']['overall']:
+            value_idx = 1
+            for value, results in self.attribute_analysis.business_rules_results['invalid']['overall']['values'].items():
+                invalid_data_sets += self.__render_invalid_data_set(value, results, value_idx)
+                value_idx += 1
 
         invalid_data_sets += """
                         </div>
         """
         return invalid_data_sets
 
-    def __render_invalid_data_set(self, index, result):
-        data_set = self.attribute_analysis.data_frame.loc[index, : ]
+    def __render_invalid_data_set(self, value, results, value_idx):
         invalid_data_set = """
                             <div class="card">
-                                <div class="card-header" id="headingInvalidRow{index}">
+                                <div class="card-header" id="headingInvalidValue{value_id}">
                                     <h5 class="mb-0">
-                                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseInvalidRow{index}" aria-expanded="true" aria-controls="collapseInvalidRow{index}">
-                                            Index: "{index}"; Wert: "{value}"
+                                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseInvalidValue{value_id}" aria-expanded="true" aria-controls="collapseInvalidValue{value_id}">
+                                            Wert: "{value}"
                                         </button>
                                     </h5>
                                 </div>
                                     
-                                <div id="collapseInvalidRow{index}" class="collapse" aria-labelledby="headingInvalidRow{index}">
+                                <div id="collapseInvalidValue{value_id}" class="collapse" aria-labelledby="headingInvalidValue{value_id}">
                                     <div class="card-body">
                                         <table class="table">
                                             <tr>
-                                                <th>Beschreibung</th>
+                                                <th>Geschäftsregel</th>
                                                 <th>Valide</th>
                                             </tr>
                                     
         """.format(
-            index=index,
-            value=data_set[self.attribute_analysis.attribute_name]
+            value=value,
+            value_id=value_idx,
         )
 
-        for business_rule, valid in result.items():
+        for business_rule, valid in results['result'].items():
             invalid_data_set += """
                                             <tr>
                                                 <td>{business_rule_description}</td>
@@ -528,41 +620,57 @@ class BusinessRulesHTMLRenderer(BusinessRulesRenderer):
 
         invalid_data_set += """
                                         </table>
+                                        <h6><b>{count}</b> betroffene Datensätze:</h6>
+                                        <p>{data_sets_indexes}</p>
                                     </div>
                                 </div>
                             </div>
-        """
+        """.format(
+            count=results['count'],
+            data_sets_indexes=list(results['data_sets'].index.values)
+        )
 
         return invalid_data_set
 
 
 class PlotlyPieChartHTMLRenderer:
 
-    def __init__(self, topic="", attribute_name="", labels=[], values=[], colors=[]):
+    def __init__(self, topic="", attribute_name="", labels=[], values=[], colors=[], title=None, num_charts=1, width_by_num_charts=False):
         self.topic = topic
         self.attribute_name = attribute_name
         self.labels = labels
         self.values = values
         self.colors = colors
+        self.title = title
+        self.num_diagrams_in_one_row = num_charts
+        self.width_by_num_charts = width_by_num_charts
 
     def render(self):
         return """
                                                 <div id="{topic}{attribute_name}"></div>
                                                 <script>
+                                                    var chart_width = (screen.width / {num_diagrams_in_one_row})-50;
                                                     var data = [{{
                                                         labels: {labels},
                                                         values: {values},
                                                         {colors}
                                                         type: 'pie'
                                                     }}];
-                                                    Plotly.newPlot('{topic}{attribute_name}', data);
+                                                    var layout = {{
+                                                        {title}
+                                                        {width}
+                                                    }}
+                                                    Plotly.newPlot('{topic}{attribute_name}', data, layout);
                                                 </script>
         """.format(
             attribute_name = self.attribute_name,
-            topic = self.topic,
-            labels = self.labels,
-            values = self.values,
-            colors = self.__render_colors() if self.colors else ""
+            topic=self.topic,
+            labels=self.labels,
+            values=self.values,
+            colors=self.__render_colors() if self.colors else "",
+            num_diagrams_in_one_row=str(self.num_diagrams_in_one_row),
+            title="title: '{}',".format(self.title) if self.title else "",
+            width="width: chart_width," if self.width_by_num_charts else ""
         )
 
     def __render_colors(self):

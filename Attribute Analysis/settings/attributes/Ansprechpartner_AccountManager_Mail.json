@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "CreatorUser",
+  "attribute_name" : "Ansprechpartner_AccountManager_Mail",
   "dropna" : false,
 
   "indicators" : [
@@ -27,12 +27,6 @@
   "business_rules" : [
     {
       "business_rule_name" : "NotNullRule"
-    },
-    {
-      "business_rule_name" : "RegExPatternMatchingRule",
-      "business_rule_config" : {
-        "pattern" : "^\\p{Lu}\\p{Ll}+(-\\p{Lu}\\p{Ll}+)* \\p{Lu}\\p{Ll}+(-\\p{Lu}\\p{Ll}+)*( \\p{Lu}\\p{Ll}+(-\\p{Lu}\\p{Ll}+)*)*$"
-      }
     }
   ]
 }

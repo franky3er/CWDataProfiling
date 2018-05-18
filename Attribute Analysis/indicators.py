@@ -79,7 +79,7 @@ class DistinctValuesIndicator(Indicator):
         self.name = "Unterschiedliche Werte"
 
     def analyze(self):
-        distinct_values_total = self.data_frame.groupby(self.attribute_name)[self.attribute_name].nunique().sum()
+        distinct_values_total = self.data_frame.groupby(self.attribute_name)[self.attribute_name].nunique(dropna=False).sum()
         unique_values_total = self.data_frame.groupby(self.attribute_name).filter(
             lambda g: (g[self.attribute_name].size == 1)).shape[0]
         duplicate_values_total = self.data_frame.groupby(self.attribute_name).filter(
