@@ -27,10 +27,13 @@
 
   "business_rules" : [
     {
-      "business_rule_name" : "RegExPatternMatchingRule",
-      "business_rule_config" : {
-        "pattern" : "^example_regex$"
-      }
+      "business_rule_name" : "NotNullRule"
+    },
+    {
+      "business_rule_name" : "NoFoldingWhiteSpacesRule"
+    },
+    {
+      "business_rule_name" : "EmailRegExPatternMatchingRule"
     }
   ]
 }

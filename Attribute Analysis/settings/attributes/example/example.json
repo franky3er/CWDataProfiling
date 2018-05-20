@@ -49,6 +49,12 @@
           "example_value 2"
         ]
       }
+    },
+    {
+      "business_rule_name" : "NoFoldingWhiteSpacesRule"
+    },
+    {
+      "business_rule_name" : "EmailRegExPatternMatchingRule"
     }
   ]
 }

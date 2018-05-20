@@ -272,6 +272,8 @@ class BusinessRuleJSONFactory(BusinessRuleFactory):
             'NotNullRule' : NotNullRuleJSONFactory,
             'RegExPatternMatchingRule' : RegExPatternMatchingRuleJSONFactory,
             'DomainListMatchingRule' : DomainListMatchingRuleJSONFactory,
+            'NoFoldingWhiteSpacesRule': NoFoldingWhiteSpacesRuleJSONFactory,
+            'EmailRegExPatternMatchingRule' : EmailRegExPatternMatchingRuleJSONFactory
         }
 
         return business_rule_factories.get(self.json_data['business_rule_name'])(
@@ -312,6 +314,22 @@ class RegExPatternMatchingRuleJSONFactory(RegExPatternMatchingRuleFactory):
         )
 
 
+class EmailRegExPatternMatchingRuleFactory(BusinessRuleFactory):
+
+    def __init__(self):
+        pass
+
+    def create(self):
+        return EmailRegExPatternMatchingRule()
+
+
+class EmailRegExPatternMatchingRuleJSONFactory(EmailRegExPatternMatchingRuleFactory):
+
+    def __init__(self, json_data):
+        self.json_data = json_data
+        super(EmailRegExPatternMatchingRuleJSONFactory, self).__init__()
+
+
 class DomainListMatchingRuleFactory(BusinessRuleFactory):
 
     def __init__(self, values):
@@ -329,6 +347,21 @@ class DomainListMatchingRuleJSONFactory(DomainListMatchingRuleFactory):
             self.json_data['business_rule_config']['values']
         )
 
+
+class NoFoldingWhiteSpacesRuleFactory(BusinessRuleFactory):
+
+    def __init__(self):
+        pass
+
+    def create(self):
+        return NoFoldingWhiteSpacesRule()
+
+
+class NoFoldingWhiteSpacesRuleJSONFactory(NoFoldingWhiteSpacesRuleFactory):
+
+    def __init__(self, json_data):
+        self.json_data = json_data
+        super(NoFoldingWhiteSpacesRuleJSONFactory, self).__init__()
 
 #------------------------------ Indicator Renderer Factories --------------------------------------
 
