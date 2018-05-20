@@ -17,6 +17,16 @@
       "indicator_config" : {
         "min_ratio" : 0.85
       }
+    },
+    {
+      "indicator_name" : "PatternFrequencyIndicator"
+    },
+    {
+      "indicator_name" : "ShortestValuesIndicator",
+      "indicator_config" : {
+        "number_of_values" : 100,
+        "dropna" : true
+      }
     }
 
   ],

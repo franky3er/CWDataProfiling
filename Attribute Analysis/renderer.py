@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import datetime
 import os
+from pandas import isnull
 
 class AttributeAnalysisRenderer(ABC):
 
@@ -320,8 +321,12 @@ class ValueRangeHTMLRenderer(IndicatorRenderer):
         return html_output
 
     def __render_pie_chart(self):
-        values = list(dict(self.indicator.get_result()).keys())
-        frequencies = list(dict(self.indicator.get_result()).values())
+        values = []
+        frequencies = []
+
+        for value, frequency in self.indicator.get_result().iteritems():
+            values.append(str(value))
+            frequencies.append(frequency)
 
         return PlotlyPieChartHTMLRenderer(
             topic="valueFrequency",
@@ -394,6 +399,46 @@ class PatternFrequencyHTMLRenderer(IndicatorRenderer):
         ).render()
 
 
+class ShortestValuesHTMLRenderer(IndicatorRenderer):
+
+    def __init__(self, indicator):
+        super(ShortestValuesHTMLRenderer, self).__init__(indicator)
+        self.result = self.indicator.get_result()
+
+    def render_child(self):
+        return """
+                                        <table class="table table-striped">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                    <th>Wert</th>
+                                                    <th>Länge</th>
+                                                    <th>Häufigkeit</th>
+                                                <tr>
+                                            </thead>
+                                            <tbody>
+                                                {shortest_values}
+                                            </tbody>
+                                        </table>
+        """.format(
+            shortest_values=self.__render_shortest_values()
+        )
+
+    def __render_shortest_values(self):
+        html_output = ""
+        for shortest_value in self.result:
+            html_output += """
+                                                <tr>
+                                                    <td>'{value}'</td>
+                                                    <td>{length}</td>
+                                                    <td>{count}</td>
+                                                </tr>
+            """.format(
+                value=shortest_value[0],
+                length=shortest_value[1],
+                count=shortest_value[2]
+            )
+        return html_output
+
 class BusinessRulesRenderer(ABC):
 
     def __init__(self, attribute_analysis):
@@ -408,11 +453,14 @@ class BusinessRulesHTMLRenderer(BusinessRulesRenderer):
 
     def __init__(self, attribute_analysis):
         super(BusinessRulesHTMLRenderer, self).__init__(attribute_analysis)
-        self.html_output = ""
+        self.html_output = "<h3>Geschäftsregel</h3>"
 
     def render(self):
+        if not self.attribute_analysis.business_rules:
+            return self.html_output + """
+                <p>Keine Geschäftsregeln spezifiziert!</p>
+            """
         self.html_output += """
-                                <h3>Geschäftsregel-Analyse:</h3>
                                 {business_rules_metadata}
                                 {business_rules_result_overview}
                                 {invalid_rows}
@@ -566,10 +614,7 @@ class BusinessRulesHTMLRenderer(BusinessRulesRenderer):
             invalid_values_cnt = "<b>{}</b> invalide Werte gefunden von <b>{}</b> unterschiedlichen Werten insgesamt".format(
                 str(len(self.attribute_analysis.business_rules_results['invalid']['overall']['values']))
                 if 'values' in self.attribute_analysis.business_rules_results['invalid']['overall'] else 0,
-                self.attribute_analysis.data_frame.groupby(
-                    self.attribute_analysis.attribute_name)[self.attribute_analysis.attribute_name].nunique(
-                    dropna=False
-                ).sum()
+                self.attribute_analysis.data_frame[self.attribute_analysis.attribute_name].nunique(dropna=False)
             )
         )
         if 'values' in self.attribute_analysis.business_rules_results['invalid']['overall']:

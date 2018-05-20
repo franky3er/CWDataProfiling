@@ -9,7 +9,8 @@ import datetime
 
 data_frame = pd.read_csv(CSV_FILE_PATH, encoding=CSV_FILE_ENCODING, sep=CSV_FILE_SEPARATOR)
 data_frame.set_index(PANDAS_INDEX_NAME, inplace=True, drop=False)
-report_directory = REPORT_DIRECTORY + "/" + datetime.datetime.today().strftime('%Y-%m-%d')
+#report_directory = REPORT_DIRECTORY + "/" + datetime.datetime.today().strftime('%Y-%m-%d')
+report_directory = REPORT_DIRECTORY
 
 for json_file_name in [file_name for file_name in os.listdir(ATTRIBUTE_SETTINGS_LOCATION)
                        if os.path.isfile(os.path.join(ATTRIBUTE_SETTINGS_LOCATION, file_name))

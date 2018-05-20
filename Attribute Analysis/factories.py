@@ -71,7 +71,8 @@ class IndicatorJSONFactory(IndicatorFactory):
             'NullValuesIndicator' : NullValuesIndicatorJSONFactory,
             'DistinctValuesIndicator' : DistinctValuesIndicatorJSONFactory,
             'ValueRangeIndicator' : ValueRangeIndicatorJSONFactory,
-            'PatternFrequencyIndicator' : PatternFrequencyIndicatorJSONFactory
+            'PatternFrequencyIndicator' : PatternFrequencyIndicatorJSONFactory,
+            'ShortestValuesIndicator' : ShortestValuesIndicatorJSONFactory
         }
 
         return indicator_factories[self.json_data['indicator_name']](
@@ -224,6 +225,34 @@ class PatternFrequencyIndicatorJSONFactory(PatternFrequencyIndicatorFactory):
         return super(PatternFrequencyIndicatorJSONFactory, self).create()
 
 
+class ShortestValuesIndicatorFactory(ABC):
+
+    def __init__(self, data_frame, attribute_name, number_of_values, dropna):
+        self.data_frame = data_frame
+        self.attribute_name = attribute_name
+        self.number_of_values = number_of_values
+        self.dropna = dropna
+
+    def create(self):
+        return ShortestValuesIndicator(
+            data_frame=self.data_frame,
+            attribute_name=self.attribute_name,
+            number_of_values=self.number_of_values,
+            dropna=self.dropna
+        )
+
+
+class ShortestValuesIndicatorJSONFactory(ShortestValuesIndicatorFactory):
+
+    def __init__(self, json_data, data_frame, attribute_name):
+        super(ShortestValuesIndicatorJSONFactory, self).__init__(
+            data_frame,
+            attribute_name,
+            json_data['indicator_config']['number_of_values'],
+            json_data['indicator_config']['dropna']
+        )
+
+
 #------------------------------Business Rule Factories-------------------------------------------
 
 class BusinessRuleFactory(ABC):
@@ -324,7 +353,8 @@ class IndicatorHTMLRendererFactory(IndicatorRendererFactory):
             NullValuesIndicator : NullValuesHTMLRenderer,
             DistinctValuesIndicator : DistinctValuesHTMLRenderer,
             ValueRangeIndicator : ValueRangeHTMLRenderer,
-            PatternFrequencyIndicator : PatternFrequencyHTMLRenderer
+            PatternFrequencyIndicator : PatternFrequencyHTMLRenderer,
+            ShortestValuesIndicator : ShortestValuesHTMLRenderer
         }
 
         return indicator_html_renderer.get(type(self.indicator))(self.indicator)

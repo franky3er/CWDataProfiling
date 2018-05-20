@@ -1,4 +1,5 @@
 from collections import defaultdict
+from pandas import isnull
 
 class AttributeAnalysis:
 
@@ -30,7 +31,10 @@ class AttributeAnalysis:
     def run_business_rules_analysis(self):
         print("     Run Business-Rule Analysis...")
         for value, count in self.data_frame[self.attribute_name].value_counts(dropna=False).items():
-            data_sets = self.data_frame[self.data_frame[self.attribute_name] == value]
+            data_sets = (
+                self.data_frame[self.data_frame[self.attribute_name] == value] if not isnull(value)
+                else self.data_frame[self.data_frame[self.attribute_name].isnull()]
+            )
             if self.dropna and value.isnull():
                 continue
             result, valid = self.__validate_data_set(value, count, data_sets)

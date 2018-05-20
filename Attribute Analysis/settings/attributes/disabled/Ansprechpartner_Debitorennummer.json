@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Example_Attribute_Name",
+  "attribute_name" : "Ansprechpartner_Debitorennummer",
   "dropna" : false,
 
   "indicators" : [
@@ -38,16 +38,7 @@
     {
       "business_rule_name" : "RegExPatternMatchingRule",
       "business_rule_config" : {
-        "pattern" : "^example_regex$"
-      }
-    },
-    {
-      "business_rule_name" : "DomainListMatchingRule",
-      "business_rule_config" : {
-        "values" : [
-          "example_value 1",
-          "example_value 2"
-        ]
+        "pattern" : "^A{0,1}[0-9]{5}$"
       }
     }
   ]

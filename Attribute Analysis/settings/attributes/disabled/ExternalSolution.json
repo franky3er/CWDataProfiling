@@ -11,6 +11,13 @@
     },
     {
       "indicator_name" : "ValueRangeIndicator"
+    },
+    {
+      "indicator_name" : "ShortestValuesIndicator",
+      "indicator_config" : {
+        "number_of_values" : 100,
+        "dropna" : true
+      }
     }
 
   ],
