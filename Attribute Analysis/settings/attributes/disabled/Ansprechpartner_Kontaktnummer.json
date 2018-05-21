@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Ansprechpartner_AccountManager_Mail",
+  "attribute_name" : "Ansprechpartner_Kontaktnummer",
   "dropna" : false,
 
   "indicators" : [
@@ -20,6 +20,13 @@
     },
     {
       "indicator_name" : "PatternFrequencyIndicator"
+    },
+    {
+      "indicator_name" : "ShortestValuesIndicator",
+      "indicator_config" : {
+        "number_of_values" : 100,
+        "dropna" : true
+      }
     }
 
   ],

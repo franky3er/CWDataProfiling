@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Ansprechpartner_Firma",
+  "attribute_name" : "Ansprechpartner_Mail_zusaetzlicher_Empfaenger",
   "dropna" : false,
 
   "indicators" : [
@@ -33,10 +33,13 @@
 
   "business_rules" : [
     {
-      "business_rule_name" : "NotNullRule"
+      "business_rule_name" : "NoFoldingWhiteSpacesRule"
     },
     {
-      "business_rule_name" : "NoFoldingWhiteSpacesRule"
+      "business_rule_name" : "EmailRegExPatternMatchingRule",
+      "business_rule_config" : {
+        "dropna" : true
+      }
     }
   ]
 }

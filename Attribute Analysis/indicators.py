@@ -105,7 +105,7 @@ class ValueRangeIndicator(Indicator):
         self.name = "Wertebereich / Wertemenge"
 
     def analyze(self):
-        self.result = self.data_frame[self.attribute_name].value_counts()
+        self.result = self.data_frame[self.attribute_name].value_counts(dropna=False)
 
     def get_result(self):
         return self.result
@@ -143,3 +143,24 @@ class PatternFrequencyIndicator(Indicator):
 
     def get_result(self):
         return self.sorted_result_tuple
+
+
+class ShortestValuesIndicator(Indicator):
+
+    def __init__(self, data_frame=None, attribute_name=None, number_of_values=100, dropna=True):
+        super(ShortestValuesIndicator, self).__init__(data_frame=data_frame, attribute_name=attribute_name)
+        self.number_of_values=number_of_values
+        self.dropna=dropna
+        self.name = "Kürzeste Werte"
+        self.shortest_values = []
+
+    def analyze(self):
+        for value, count in self.data_frame[self.attribute_name].value_counts(dropna=self.dropna).items():
+            length = len(str(value))
+            self.shortest_values.append((value, length, count))
+
+        self.shortest_values = sorted(self.shortest_values, key=lambda x: x[1])
+        self.shortest_values = self.shortest_values[0:100] if len(self.shortest_values) >= 100 else self.shortest_values
+
+    def get_result(self):
+        return self.shortest_values
