@@ -31,7 +31,14 @@
     {
       "business_rule_name" : "RegExPatternMatchingRule",
       "business_rule_config" : {
-        "pattern": "^\\p{L}\\p{Ll}+(-\\p{L}\\p{Ll}+)*.\\p{L}\\p{Ll}+(-\\p{L}\\p{Ll}+)*@controlware.(de|at)$"
+        "pattern": "^\\p{L}\\p{Ll}+(-\\p{L}\\p{Ll}+)*.\\p{L}\\p{Ll}+(-\\p{L}\\p{Ll}+)*@controlware.(de|at)$",
+        "dropna" : true
+      }
+    },
+    {
+      "business_rule_name" : "EmailRegExPatternMatchingRule",
+      "business_rule_config" : {
+        "dropna" : true
       }
     }
   ]

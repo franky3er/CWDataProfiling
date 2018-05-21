@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Ansprechpartner_Firma",
+  "attribute_name" : "Ansprechpartner_Mail_Statusmails_an",
   "dropna" : false,
 
   "indicators" : [
@@ -32,11 +32,5 @@
   ],
 
   "business_rules" : [
-    {
-      "business_rule_name" : "NotNullRule"
-    },
-    {
-      "business_rule_name" : "NoFoldingWhiteSpacesRule"
-    }
   ]
 }

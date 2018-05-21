@@ -31,7 +31,8 @@
     {
       "business_rule_name" : "RegExPatternMatchingRule",
       "business_rule_config" : {
-        "pattern" : "^\\p{Lu}\\p{Ll}+(-\\p{Lu}\\p{Ll}+)* \\p{Lu}\\p{Ll}+(-\\p{Lu}\\p{Ll}+)*( \\p{Lu}\\p{Ll}+(-\\p{Lu}\\p{Ll}+)*)*$"
+        "pattern" : "^\\p{Lu}\\p{Ll}+(-\\p{Lu}\\p{Ll}+)* \\p{Lu}\\p{Ll}+(-\\p{Lu}\\p{Ll}+)*( \\p{Lu}\\p{Ll}+(-\\p{Lu}\\p{Ll}+)*)*$",
+        "dropna" : true
       }
     }
   ]

@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Ansprechpartner_Mail",
+  "attribute_name" : "Ansprechpartner_Mobilnummer",
   "dropna" : false,
 
   "indicators" : [
@@ -11,6 +11,12 @@
     },
     {
       "indicator_name" : "ValueRangeIndicator"
+    },
+    {
+      "indicator_name" : "SimilarValuesIndicator",
+      "indicator_config" : {
+        "min_ratio" : 0.85
+      }
     },
     {
       "indicator_name" : "PatternFrequencyIndicator"
@@ -26,14 +32,5 @@
   ],
 
   "business_rules" : [
-    {
-      "business_rule_name" : "NotNullRule"
-    },
-    {
-      "business_rule_name" : "NoFoldingWhiteSpacesRule"
-    },
-    {
-      "business_rule_name" : "EmailRegExPatternMatchingRule"
-    }
   ]
 }

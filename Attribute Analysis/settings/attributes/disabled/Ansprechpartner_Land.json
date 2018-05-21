@@ -38,7 +38,8 @@
     {
       "business_rule_name" : "RegExPatternMatchingRule",
       "business_rule_config" : {
-        "pattern" : "^[A-Z]{2}"
+        "pattern" : "^[A-Z]{2}",
+        "dropna" : true
       }
     }
   ]

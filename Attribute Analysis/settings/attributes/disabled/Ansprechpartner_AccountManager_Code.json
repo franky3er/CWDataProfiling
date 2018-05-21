@@ -31,7 +31,8 @@
     {
       "business_rule_name" : "RegExPatternMatchingRule",
       "business_rule_config" : {
-        "pattern" : "^[A-Z]{1,8}$"
+        "pattern" : "^[A-Z]{1,8}$",
+        "dropna" : true
       }
     }
   ]

@@ -30,12 +30,15 @@ class NotNullRule(BusinessRule):
 
 class RegExPatternMatchingRule(BusinessRule):
 
-    def __init__(self, pattern="*"):
+    def __init__(self, pattern="*", dropna=False):
         super(RegExPatternMatchingRule, self).__init__("RegEx-Übereinstimmung")
         self.pattern = pattern
         self.regex = re.compile(self.pattern)
+        self.dropna = dropna
 
     def is_valid(self, value):
+        if self.dropna and isnull(value):
+            return True
         return self.regex.match(str(value))
 
     def get_description(self):
@@ -46,9 +49,9 @@ class RegExPatternMatchingRule(BusinessRule):
 
 class EmailRegExPatternMatchingRule(RegExPatternMatchingRule):
 
-    def __init__(self):
+    def __init__(self, dropna=False):
         pattern = "([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|\"([]!#-[^-~ \t]|(\\[\t -~]))+\")@([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|\[[\t -Z^-~]*])"
-        super(EmailRegExPatternMatchingRule, self).__init__(pattern)
+        super(EmailRegExPatternMatchingRule, self).__init__(pattern, dropna=dropna)
         self.name = "Email-RegEx-Übereinstimmung"
 
 

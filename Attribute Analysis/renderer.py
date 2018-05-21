@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 import datetime
 import os
-from pandas import isnull
 
 class AttributeAnalysisRenderer(ABC):
 
@@ -18,8 +17,9 @@ class AttributeAnalysisHTMLRenderer(AttributeAnalysisRenderer):
 
     def __init__(self, attribute_analysis, output_directory):
         super(AttributeAnalysisHTMLRenderer, self).__init__(attribute_analysis)
+        self.output_directory = output_directory
         self.output_file_path = "{output_directory}/{output_file_name}.html".format(
-            output_directory = output_directory,
+            output_directory = self.output_directory,
             output_file_name = attribute_analysis.attribute_name
         )
         os.makedirs(os.path.dirname(self.output_file_path), exist_ok=True)
@@ -499,7 +499,7 @@ class BusinessRulesHTMLRenderer(BusinessRulesRenderer):
             business_rule_invalid_values_percentage = round((business_rule_invalid_values_count / values_total) * 100, 2)
             business_rule_metadata += """
                             <tr>
-                                <td>{business_rule_id}</td>
+                                <td><a href="{business_rule_details_file_path}">{business_rule_id}</td>
                                 <td>{business_rule_name}</td>
                                 <td>{business_rule_desciption}</td>
                                 <td>{business_rule_valid_values_count}</td>
@@ -508,7 +508,11 @@ class BusinessRulesHTMLRenderer(BusinessRulesRenderer):
                                 <td>{business_rule_invalid_values_percentage}</td>
                             </tr>
             """.format(
-                business_rule_id=business_rule.__class__.__name__,
+                business_rule_details_file_path="./details/{}/{}.html".format(
+                    self.attribute_analysis.attribute_name,
+                    business_rule_id
+                ),
+                business_rule_id=business_rule_id,
                 business_rule_name=business_rule.name,
                 business_rule_desciption=business_rule.get_description(),
                 business_rule_valid_values_count=business_rule_valid_values_count,
@@ -726,3 +730,232 @@ class PlotlyPieChartHTMLRenderer:
         """.format(
             colors = self.colors
         )
+
+
+class BusinessRulesDetailsHTMLRenderer():
+
+    def __init__(self, attribute_analysis, output_directory):
+        self.attribute_analysis = attribute_analysis
+        self.output_directory = output_directory
+
+    def render(self):
+        for business_rule in self.attribute_analysis.business_rules:
+            BusinessRuleDetailsHTMLRenderer(
+                business_rule,
+                self.attribute_analysis,
+                "{output_directory}/{attribute_name}/".format(
+                    output_directory = self.output_directory,
+                    attribute_name = self.attribute_analysis.attribute_name,
+                )
+            ).render()
+
+
+class BusinessRuleDetailsHTMLRenderer():
+
+    def __init__(self, business_rule, attribute_analysis, output_directory):
+        self.business_rule = business_rule
+        self.attribute_analysis = attribute_analysis
+        self.output_directory = output_directory
+        self.html_output = ""
+        self.output_file_path = "{output_directory}{business_rule_details_file_name}.html".format(
+            output_directory=self.output_directory,
+            business_rule_details_file_name=self.business_rule.__class__.__name__
+        )
+        os.makedirs(os.path.dirname(self.output_directory), exist_ok=True)
+
+    def render(self):
+        self.html_output = self.__render_html_output()
+        output_file = open(self.output_file_path, "w", encoding="UTF-8")
+        output_file.write(self.html_output)
+        output_file.close()
+
+    def __render_html_output(self):
+        return """
+            <!DOCTYPE html>
+            <html lang="de">
+                <head>
+                    <meta charset="utf-8" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+                    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+                    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+                    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
+                    <title>{attribute_name} | {business_rule_id}-Details</title>
+                </head>
+                <body>
+                    <div class="container-fluid">
+                    {body}
+                    </div>
+                </body>
+            </html>
+        """.format(
+            attribute_name = self.attribute_analysis.attribute_name,
+            business_rule_id = self.business_rule.__class__.__name__,
+            body = self.__render_body()
+        )
+
+    def __render_body(self):
+        return """
+                    <h1>{business_rule_id}-Details: "{attribute_name}"</h1>
+                    <br/><br/>
+                    {meta_infos}
+                    {invalid_values}
+        """.format(
+            attribute_name=self.attribute_analysis.attribute_name,
+            business_rule_id=self.business_rule.__class__.__name__,
+            meta_infos = self.__render_meta_infos(),
+            invalid_values = self.__render_invalid_values()
+        )
+
+    def __render_meta_infos(self):
+        business_rule_id = self.business_rule.__class__.__name__
+
+        valid_values_total = (
+            self.attribute_analysis.business_rules_results['valid'][business_rule_id]['count']
+        )
+        invalid_values_total = (
+            self.attribute_analysis.business_rules_results['invalid'][business_rule_id]['count']
+        )
+        values_total = valid_values_total + invalid_values_total
+        valid_values_total_percentage = round((valid_values_total / values_total) * 100, 2)
+        invalid_values_total_percentage = round((invalid_values_total / values_total) * 100, 2)
+
+        values_distinct = (
+            self.attribute_analysis.data_frame[self.attribute_analysis.attribute_name].nunique(dropna=False)
+        )
+        invalid_values_distinct = 0
+        if 'values' in self.attribute_analysis.business_rules_results['invalid'][business_rule_id]:
+            invalid_values_distinct = (
+                len(self.attribute_analysis.business_rules_results['invalid'][business_rule_id]['values'])
+            )
+        valid_values_distinct = values_distinct - invalid_values_distinct
+        valid_values_distinct_percentage = round((valid_values_distinct / values_distinct) * 100, 2)
+        invalid_values_distinct_percentage = round((invalid_values_distinct / values_distinct) * 100, 2)
+
+        return """
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table">
+                        <tr>
+                            <th>Attribut</th>
+                            <td>{attribute_name}</td>
+                        </tr>
+                        <tr>
+                            <th>Geschäftsregel-Id</th>
+                            <td>{business_rule_id}</td>
+                        </tr>
+                        <tr>
+                            <th>Geschäftsregel-Name</th>
+                            <td>business_rule_name</td>
+                        </tr>
+                        <tr>
+                            <th>Geschäftsregel-Beschreibung</th>
+                            <td>{business_rule_description}</td>
+                        </tr>
+                        <tr>
+                            <th>Relative Häufigkeit (Alle validen Werte)</th>
+                            <td>{valid_values_total} / {values_total} ({valid_values_total_percentage} %)</td>
+                        </tr>
+                        <tr>
+                            <th>Relative Häufigkeit (Alle invaliden Werte)</th>
+                            <td>{invalid_values_total} / {values_total} ({invalid_values_total_percentage} %)</td>
+                        </tr>
+                        <tr>
+                            <th>Relative Häufigkeit (Distinct valide Werte)</th>
+                            <td>{valid_values_distinct} / {values_distinct} ({valid_values_distinct_percentage} %)</td>
+                        </tr>
+                        <tr>
+                            <th>Relative Häufigkeit (Distinct invalide Werte)</th>
+                            <td>{invalid_values_distinct} / {values_distinct} ({invalid_values_distinct_percentage} %)</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-6">
+                            {pie_chart_invalid_values_total}
+                        </div>
+                        <div class="col-md-6">
+                            {pie_chart_invalid_values_distinct}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        """.format(
+            attribute_name = self.attribute_analysis.attribute_name,
+            business_rule_id = self.business_rule.__class__.__name__,
+            business_rule_name = self.business_rule.name,
+            business_rule_description = self.business_rule.get_description(),
+            values_total=values_total,
+            valid_values_total=valid_values_total,
+            invalid_values_total = invalid_values_total,
+            valid_values_total_percentage=valid_values_total_percentage,
+            invalid_values_total_percentage = invalid_values_total_percentage,
+            values_distinct=values_distinct,
+            valid_values_distinct=valid_values_distinct,
+            invalid_values_distinct = invalid_values_distinct,
+            valid_values_distinct_percentage=valid_values_distinct_percentage,
+            invalid_values_distinct_percentage = invalid_values_distinct_percentage,
+            pie_chart_invalid_values_total=PlotlyPieChartHTMLRenderer(
+                title="Alle Werte",
+                topic="invalid_values_total{}".format(business_rule_id),
+                attribute_name=self.attribute_analysis.attribute_name,
+                labels=['invalide', 'valide'],
+                values=[
+                    invalid_values_total,
+                    valid_values_total,
+                ],
+                colors=['rgb(255, 0, 0', 'rgb(0, 255, 0'],
+            ).render(),
+            pie_chart_invalid_values_distinct=PlotlyPieChartHTMLRenderer(
+                title="Distinct Werte",
+                topic="invalid_values_distinct{}".format(business_rule_id),
+                attribute_name=self.attribute_analysis.attribute_name,
+                labels=['invalide', 'valide'],
+                values=[
+                    invalid_values_distinct,
+                    valid_values_distinct,
+                ],
+                colors=['rgb(255, 0, 0', 'rgb(0, 255, 0'],
+            ).render()
+        )
+
+    def __render_invalid_values(self):
+        return """
+            <br/>
+            <h3>Invalide Werte:</h3>
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Wert</th>
+                        <th>Häufigkeit</th>
+                        <th>Indizes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {invalid_values}
+                </tbody>
+            </table>
+        """.format(
+            invalid_values=self.__render_invalid_values_details()
+        )
+
+    def __render_invalid_values_details(self):
+        html_output = ""
+        if 'values' not in self.attribute_analysis.business_rules_results['invalid'][self.business_rule.__class__.__name__]:
+            return html_output
+        for value, results in self.attribute_analysis.business_rules_results['invalid'][self.business_rule.__class__.__name__]['values'].items():
+            html_output += """
+                <tr>
+                    <td>"{value}"</td>
+                    <td>{count}</td>
+                    <td>{index}</td>
+                </tr>
+            """.format(
+                value=value,
+                count=results['count'],
+                index=list(results['data_sets'].index.values)
+            )
+        return html_output

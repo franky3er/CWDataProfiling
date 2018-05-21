@@ -19,7 +19,8 @@
     {
       "business_rule_name" : "RegExPatternMatchingRule",
       "business_rule_config" : {
-        "pattern" : "^IN[0-9]{7}$"
+        "pattern" : "^IN[0-9]{7}$",
+        "dropna" : true
       }
     }
   ]

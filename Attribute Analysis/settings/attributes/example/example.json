@@ -38,7 +38,8 @@
     {
       "business_rule_name" : "RegExPatternMatchingRule",
       "business_rule_config" : {
-        "pattern" : "^example_regex$"
+        "pattern" : "^example_regex$",
+        "dropna" : true
       }
     },
     {

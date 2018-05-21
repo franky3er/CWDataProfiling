@@ -298,11 +298,12 @@ class NotNullRuleJSONFactory(NotNullRuleFactory):
 
 class RegExPatternMatchingRuleFactory(BusinessRuleFactory):
 
-    def __init__(self, pattern):
+    def __init__(self, pattern, dropna):
         self.pattern = pattern
+        self.dropna = dropna
 
     def create(self):
-        return RegExPatternMatchingRule(pattern=self.pattern)
+        return RegExPatternMatchingRule(pattern=self.pattern, dropna=self.dropna)
 
 
 class RegExPatternMatchingRuleJSONFactory(RegExPatternMatchingRuleFactory):
@@ -310,24 +311,27 @@ class RegExPatternMatchingRuleJSONFactory(RegExPatternMatchingRuleFactory):
     def __init__(self, json_data):
         self.json_data = json_data
         super(RegExPatternMatchingRuleJSONFactory, self).__init__(
-            self.json_data['business_rule_config']['pattern']
+            self.json_data['business_rule_config']['pattern'],
+            self.json_data['business_rule_config']['dropna']
         )
 
 
 class EmailRegExPatternMatchingRuleFactory(BusinessRuleFactory):
 
-    def __init__(self):
-        pass
+    def __init__(self, dropna):
+        self.dropna = dropna
 
     def create(self):
-        return EmailRegExPatternMatchingRule()
+        return EmailRegExPatternMatchingRule(dropna=self.dropna)
 
 
 class EmailRegExPatternMatchingRuleJSONFactory(EmailRegExPatternMatchingRuleFactory):
 
     def __init__(self, json_data):
         self.json_data = json_data
-        super(EmailRegExPatternMatchingRuleJSONFactory, self).__init__()
+        super(EmailRegExPatternMatchingRuleJSONFactory, self).__init__(
+            self.json_data['business_rule_config']['dropna']
+        )
 
 
 class DomainListMatchingRuleFactory(BusinessRuleFactory):
