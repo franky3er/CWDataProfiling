@@ -51,8 +51,56 @@ class EmailRegExPatternMatchingRule(RegExPatternMatchingRule):
 
     def __init__(self, dropna=False):
         pattern = "([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|\"([]!#-[^-~ \t]|(\\[\t -~]))+\")@([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|\[[\t -Z^-~]*])"
-        super(EmailRegExPatternMatchingRule, self).__init__(pattern, dropna=dropna)
+        super(EmailRegExPatternMatchingRule, self).__init__(pattern=pattern, dropna=dropna)
         self.name = "Email-RegEx-Übereinstimmung"
+
+
+class PhoneRegExPatternMatchingRule(RegExPatternMatchingRule):
+
+    def __init__(self, dropna=False):
+        pattern = "^\+(?:[0-9]\x20?){6,14}[0-9]$"
+        super(PhoneRegExPatternMatchingRule, self).__init__(pattern=pattern, dropna=dropna)
+        self.name = "Mobilnummer-RegEx-Übereinstimmung (nach ITU-T E.164)"
+
+
+class LastNameRegExPatternMatchingRule(RegExPatternMatchingRule):
+
+    def __init__(self, dropna=False):
+        pattern = "^(\p{Ll}{3,} |d'){0,1}\p{Lu}\p{Ll}+((-|\x20)\p{Lu}\p{Ll}+)*$"
+        super(LastNameRegExPatternMatchingRule, self).__init__(pattern=pattern, dropna=dropna)
+        self.name = "Nachname-RegEx-Übereinstimmung"
+
+
+class FirstNameRegExPatternMatchingRule(RegExPatternMatchingRule):
+
+    def __init__(self, dropna=False):
+        pattern = "^\p{Lu}\p{Ll}*((\x20|-)\p{Lu}\p{Ll}*)*$"
+        super(FirstNameRegExPatternMatchingRule, self).__init__(pattern=pattern, dropna=dropna)
+        self.name = "Vorname-RegEx-Übereinstimmung"
+
+
+class GermanDateRegExPatternMatchingRule(RegExPatternMatchingRule):
+
+    def __init__(self, dropna=False):
+        pattern = "^\d{2}\.\d{2}\.\d{4}$"
+        super(GermanDateRegExPatternMatchingRule, self).__init__(pattern=pattern, dropna=dropna)
+        self.name = "GermanDate-RegEx-Übereinstimmung"
+
+
+class DateTimeRegExPatternMatchingRule(RegExPatternMatchingRule):
+
+    def __init__(self, dropna=False):
+        pattern = "^(([0-9]{4}-[0-9]{1,2})-([0-9]{1,2})) (([01][0-9]|[2][0-3]):([0-5][0-9]):[0-5][0-9].[0-9]{9})$"
+        super(DateTimeRegExPatternMatchingRule, self).__init__(pattern=pattern, dropna=dropna)
+        self.name = "DateTime-RegEx-Übereinstimmung"
+
+
+class DateTimeMEZRegExPatternMatchingRule(RegExPatternMatchingRule):
+
+    def __init__(self, dropna=False):
+        pattern = "^(([0-9]{4}-[0-9]{1,2})-([0-9]{1,2})) (([01][0-9]|[2][0-3]):([0-5][0-9]):[0-5][0-9])$"
+        super(DateTimeMEZRegExPatternMatchingRule, self).__init__(pattern=pattern, dropna=dropna)
+        self.name = "DateTime_MEZ-RegEx-Übereinstimmung"
 
 
 class DomainListMatchingRule(BusinessRule):

@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "LastTicketModification_MEZ",
+  "attribute_name" : "Garantie_von_MEZ",
   "dropna" : false,
 
   "indicators" : [
@@ -10,23 +10,30 @@
       "indicator_name" : "DistinctValuesIndicator"
     },
     {
+      "indicator_name" : "ValueRangeIndicator"
+    },
+    {
       "indicator_name" : "PatternFrequencyIndicator"
     },
     {
-      "indicator_name" : "ValueRangeIndicator"
+      "indicator_name" : "ShortestValuesIndicator",
+      "indicator_config" : {
+        "number_of_values" : 100,
+        "dropna" : true
+      }
     }
 
   ],
 
   "business_rules" : [
     {
-      "business_rule_name" : "NotNullRule"
-    },
-    {
       "business_rule_name" : "DateTimeMEZRegExPatternMatchingRule",
       "business_rule_config" : {
         "dropna" : true
       }
+    },
+    {
+      "business_rule_name" : "NoFoldingWhiteSpacesRule"
     }
   ]
 }

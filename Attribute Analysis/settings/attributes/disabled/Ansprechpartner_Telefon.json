@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "CreatedDateTime",
+  "attribute_name" : "Ansprechpartner_Telefon",
   "dropna" : false,
 
   "indicators" : [
@@ -10,7 +10,17 @@
       "indicator_name" : "DistinctValuesIndicator"
     },
     {
+      "indicator_name" : "ValueRangeIndicator"
+    },
+    {
       "indicator_name" : "PatternFrequencyIndicator"
+    },
+    {
+      "indicator_name" : "ShortestValuesIndicator",
+      "indicator_config" : {
+        "number_of_values" : 100,
+        "dropna" : true
+      }
     }
 
   ],
@@ -20,7 +30,10 @@
       "business_rule_name" : "NotNullRule"
     },
     {
-      "business_rule_name" : "DateTimeRegExPatternMatchingRule",
+      "business_rule_name" : "NoFoldingWhiteSpacesRule"
+    },
+    {
+      "business_rule_name" : "PhoneRegExPatternMatchingRule",
       "business_rule_config" : {
         "dropna" : true
       }

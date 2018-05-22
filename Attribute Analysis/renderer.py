@@ -739,7 +739,9 @@ class BusinessRulesDetailsHTMLRenderer():
         self.output_directory = output_directory
 
     def render(self):
+        print("     Render Business Rule Details")
         for business_rule in self.attribute_analysis.business_rules:
+            print("          {}".format(business_rule.__class__.__name__))
             BusinessRuleDetailsHTMLRenderer(
                 business_rule,
                 self.attribute_analysis,
@@ -848,7 +850,7 @@ class BusinessRuleDetailsHTMLRenderer():
                         </tr>
                         <tr>
                             <th>Geschäftsregel-Name</th>
-                            <td>business_rule_name</td>
+                            <td>{business_rule_name}</td>
                         </tr>
                         <tr>
                             <th>Geschäftsregel-Beschreibung</th>

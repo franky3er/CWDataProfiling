@@ -1,0 +1,43 @@
+{
+  "attribute_name" : "Ansprechpartner_PLZ",
+  "dropna" : false,
+
+  "indicators" : [
+    {
+      "indicator_name" : "NullValuesIndicator"
+    },
+    {
+      "indicator_name" : "DistinctValuesIndicator"
+    },
+    {
+      "indicator_name" : "ValueRangeIndicator"
+    },
+    {
+      "indicator_name" : "PatternFrequencyIndicator"
+    },
+    {
+      "indicator_name" : "ShortestValuesIndicator",
+      "indicator_config" : {
+        "number_of_values" : 100,
+        "dropna" : true
+      }
+    }
+
+  ],
+
+  "business_rules" : [
+    {
+      "business_rule_name" : "NotNullRule"
+    },
+    {
+      "business_rule_name" : "NoFoldingWhiteSpacesRule"
+    },
+    {
+      "business_rule_name" : "RegExPatternMatchingRule",
+      "business_rule_config" : {
+        "pattern" : "^\\d{4,}\\x20\\p{Lu}\\p{Ll}+.*$",
+        "dropna" : true
+      }
+    }
+  ]
+}
