@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Example_Attribute_Name",
+  "attribute_name" : "Ansprechpartner_Mandant",
   "dropna" : false,
 
   "indicators" : [
@@ -38,7 +38,7 @@
     {
       "business_rule_name" : "RegExPatternMatchingRule",
       "business_rule_config" : {
-        "pattern" : "^example_regex$",
+        "pattern" : "^(A|D)$",
         "dropna" : true
       }
     },
@@ -46,30 +46,9 @@
       "business_rule_name" : "DomainListMatchingRule",
       "business_rule_config" : {
         "values" : [
-          "example_value 1",
-          "example_value 2"
+          "A",
+          "D"
         ]
-      }
-    },
-    {
-      "business_rule_name" : "NoFoldingWhiteSpacesRule"
-    },
-    {
-      "business_rule_name" : "EmailRegExPatternMatchingRule",
-      "business_rule_config" : {
-        "dropna" : true
-      }
-    },
-    {
-      "business_rule_name" : "PhoneRegExPatternMatchingRule",
-      "business_rule_config" : {
-        "dropna" : true
-      }
-    },
-    {
-      "business_rule_name" : "DateTimeRegExPatternMatchingRule",
-      "business_rule_config" : {
-        "dropna" : true
       }
     }
   ]

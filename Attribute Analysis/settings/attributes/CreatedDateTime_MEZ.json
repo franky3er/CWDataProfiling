@@ -1,0 +1,29 @@
+{
+  "attribute_name" : "CreatedDateTime_MEZ",
+  "dropna" : false,
+
+  "indicators" : [
+    {
+      "indicator_name" : "NullValuesIndicator"
+    },
+    {
+      "indicator_name" : "DistinctValuesIndicator"
+    },
+    {
+      "indicator_name" : "PatternFrequencyIndicator"
+    }
+
+  ],
+
+  "business_rules" : [
+    {
+      "business_rule_name" : "NotNullRule"
+    },
+    {
+      "business_rule_name" : "DateTimeMEZRegExPatternMatchingRule",
+      "business_rule_config" : {
+        "dropna" : true
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "attribute_name" : "LastTicketModification",
+  "dropna" : false,
+
+  "indicators" : [
+    {
+      "indicator_name" : "NullValuesIndicator"
+    },
+    {
+      "indicator_name" : "DistinctValuesIndicator"
+    },
+    {
+      "indicator_name" : "PatternFrequencyIndicator"
+    },
+    {
+      "indicator_name" : "ValueRangeIndicator"
+    }
+
+  ],
+
+  "business_rules" : [
+    {
+      "business_rule_name" : "NotNullRule"
+    },
+    {
+      "business_rule_name" : "DateTimeRegExPatternMatchingRule",
+      "business_rule_config" : {
+        "dropna" : true
+      }
+    }
+  ]
+}

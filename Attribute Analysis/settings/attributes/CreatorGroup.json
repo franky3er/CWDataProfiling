@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "CreatorUser",
+  "attribute_name" : "CreatorGroup",
   "dropna" : false,
 
   "indicators" : [
@@ -17,11 +17,7 @@
       "indicator_config" : {
         "min_ratio" : 0.85
       }
-    },
-    {
-      "indicator_name" : "PatternFrequencyIndicator"
     }
-
   ],
 
   "business_rules" : [
@@ -29,11 +25,7 @@
       "business_rule_name" : "NotNullRule"
     },
     {
-      "business_rule_name" : "RegExPatternMatchingRule",
-      "business_rule_config" : {
-        "pattern" : "^\\p{Lu}\\p{Ll}+(-\\p{Lu}\\p{Ll}+)* \\p{Lu}\\p{Ll}+(-\\p{Lu}\\p{Ll}+)*( \\p{Lu}\\p{Ll}+(-\\p{Lu}\\p{Ll}+)*)*$",
-        "dropna" : true
-      }
+      "business_rule_name" : "NoFoldingWhiteSpacesRule"
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Example_Attribute_Name",
+  "attribute_name" : "Ansprechpartner_Name",
   "dropna" : false,
 
   "indicators" : [
@@ -36,41 +36,13 @@
       "business_rule_name" : "NotNullRule"
     },
     {
-      "business_rule_name" : "RegExPatternMatchingRule",
+      "business_rule_name" : "LastNameRegExPatternMatchingRule",
       "business_rule_config" : {
-        "pattern" : "^example_regex$",
         "dropna" : true
-      }
-    },
-    {
-      "business_rule_name" : "DomainListMatchingRule",
-      "business_rule_config" : {
-        "values" : [
-          "example_value 1",
-          "example_value 2"
-        ]
       }
     },
     {
       "business_rule_name" : "NoFoldingWhiteSpacesRule"
-    },
-    {
-      "business_rule_name" : "EmailRegExPatternMatchingRule",
-      "business_rule_config" : {
-        "dropna" : true
-      }
-    },
-    {
-      "business_rule_name" : "PhoneRegExPatternMatchingRule",
-      "business_rule_config" : {
-        "dropna" : true
-      }
-    },
-    {
-      "business_rule_name" : "DateTimeRegExPatternMatchingRule",
-      "business_rule_config" : {
-        "dropna" : true
-      }
     }
   ]
 }

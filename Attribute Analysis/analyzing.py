@@ -1,3 +1,6 @@
+from collections import defaultdict
+from pandas import isnull
+
 class AttributeAnalysis:
 
     def __init__(self, attribute_name, data_frame, dropna=True):
@@ -6,8 +9,7 @@ class AttributeAnalysis:
         self.indicators = []
         self.dropna = dropna
         self.business_rules = []
-        self.valid_data_sets_results = {}
-        self.invalid_data_sets_results = {}
+        self.business_rules_results = {}
 
     def add_indicator(self, indicator):
         self.indicators.append(indicator)
@@ -28,21 +30,52 @@ class AttributeAnalysis:
 
     def run_business_rules_analysis(self):
         print("     Run Business-Rule Analysis...")
-        for index, data_set in self.data_frame.iterrows():
-            if self.dropna and data_set[self.attribute_name].isnull():
+        for value, count in self.data_frame[self.attribute_name].value_counts(dropna=False).items():
+            data_sets = (
+                self.data_frame[self.data_frame[self.attribute_name] == value] if not isnull(value)
+                else self.data_frame[self.data_frame[self.attribute_name].isnull()]
+            )
+            if self.dropna and value.isnull():
                 continue
-            result, valid = self.__validate_data_set(data_set)
+            result, valid = self.__validate_data_set(value, count, data_sets)
             if valid:
-                self.valid_data_sets_results[index] = result
+                self.__append_businss_rule_result(valid, 'overall', count, value, result, data_sets)
             else:
-                self.invalid_data_sets_results[index] = result
+                self.__append_businss_rule_result(valid, 'overall', count, value, result, data_sets)
 
-    def __validate_data_set(self, data_set):
+    def __validate_data_set(self, value, count, data_sets):
         results = {}
         all_rules_valid = True
         for business_rule in self.business_rules:
-            rule_valid = business_rule.is_valid(data_set[self.attribute_name])
+            rule_valid = business_rule.is_valid(value)
             if not rule_valid:
                 all_rules_valid = False
-            results[business_rule] = business_rule.is_valid(data_set[self.attribute_name])
+            results[business_rule] = business_rule.is_valid(value)
+            self.__append_businss_rule_result(rule_valid, business_rule.__class__.__name__, count, value, results[business_rule], data_sets)
         return results, all_rules_valid
+
+    def __append_businss_rule_result(self, valid, business_rule, count, value, result, data_sets):
+        validity = 'valid' if valid else 'invalid'
+        self.__create_initial_business_rule_results_if_not_existing(business_rule)
+        self.business_rules_results[validity][business_rule]['count'] = (
+            self.business_rules_results[validity][business_rule]['count'] + count
+        )
+        if 'values' not in self.business_rules_results[validity][business_rule]:
+            self.business_rules_results[validity][business_rule]['values'] = {}
+        self.business_rules_results[validity][business_rule]['values'][value] = {}
+        self.business_rules_results[validity][business_rule]['values'][value]['result'] = result
+        self.business_rules_results[validity][business_rule]['values'][value]['count'] = count
+        self.business_rules_results[validity][business_rule]['values'][value]['data_sets'] = data_sets
+
+    def __create_initial_business_rule_results_if_not_existing(self, business_rule):
+        if 'valid' not in self.business_rules_results:
+            self.business_rules_results['valid'] = {}
+        if business_rule not in self.business_rules_results['valid']:
+            self.business_rules_results['valid'][business_rule] = {}
+            self.business_rules_results['valid'][business_rule]['count'] = 0
+
+        if 'invalid' not in self.business_rules_results:
+            self.business_rules_results['invalid'] = {}
+        if business_rule not in self.business_rules_results['invalid']:
+            self.business_rules_results['invalid'][business_rule] = {}
+            self.business_rules_results['invalid'][business_rule]['count'] = 0

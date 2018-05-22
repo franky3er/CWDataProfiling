@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "CreatedDateTime_MEZ",
+  "attribute_name" : "Priority_de",
   "dropna" : false,
 
   "indicators" : [
@@ -10,9 +10,11 @@
       "indicator_name" : "DistinctValuesIndicator"
     },
     {
+      "indicator_name" : "ValueRangeIndicator"
+    },
+    {
       "indicator_name" : "PatternFrequencyIndicator"
     }
-
   ],
 
   "business_rules" : [
@@ -22,7 +24,19 @@
     {
       "business_rule_name" : "RegExPatternMatchingRule",
       "business_rule_config" : {
-        "pattern" : "^(([0-9]{4}-[0-9]{1,2})-([0-9]{1,2})) (([01][0-9]|[2][0-3]):([0-5][0-9]):[0-5][0-9])$"
+        "pattern" : "^[0-9] - [A-Z][a-z]+$",
+        "dropna" : true
+      }
+    },
+    {
+      "business_rule_name" : "DomainListMatchingRule",
+      "business_rule_config" : {
+        "values" : [
+          "4 - Low",
+          "3 - Medium",
+          "2 - High",
+          "1 - Emergency"
+        ]
       }
     }
   ]

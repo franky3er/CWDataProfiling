@@ -71,7 +71,8 @@ class IndicatorJSONFactory(IndicatorFactory):
             'NullValuesIndicator' : NullValuesIndicatorJSONFactory,
             'DistinctValuesIndicator' : DistinctValuesIndicatorJSONFactory,
             'ValueRangeIndicator' : ValueRangeIndicatorJSONFactory,
-            'PatternFrequencyIndicator' : PatternFrequencyIndicatorJSONFactory
+            'PatternFrequencyIndicator' : PatternFrequencyIndicatorJSONFactory,
+            'ShortestValuesIndicator' : ShortestValuesIndicatorJSONFactory
         }
 
         return indicator_factories[self.json_data['indicator_name']](
@@ -224,6 +225,34 @@ class PatternFrequencyIndicatorJSONFactory(PatternFrequencyIndicatorFactory):
         return super(PatternFrequencyIndicatorJSONFactory, self).create()
 
 
+class ShortestValuesIndicatorFactory(ABC):
+
+    def __init__(self, data_frame, attribute_name, number_of_values, dropna):
+        self.data_frame = data_frame
+        self.attribute_name = attribute_name
+        self.number_of_values = number_of_values
+        self.dropna = dropna
+
+    def create(self):
+        return ShortestValuesIndicator(
+            data_frame=self.data_frame,
+            attribute_name=self.attribute_name,
+            number_of_values=self.number_of_values,
+            dropna=self.dropna
+        )
+
+
+class ShortestValuesIndicatorJSONFactory(ShortestValuesIndicatorFactory):
+
+    def __init__(self, json_data, data_frame, attribute_name):
+        super(ShortestValuesIndicatorJSONFactory, self).__init__(
+            data_frame,
+            attribute_name,
+            json_data['indicator_config']['number_of_values'],
+            json_data['indicator_config']['dropna']
+        )
+
+
 #------------------------------Business Rule Factories-------------------------------------------
 
 class BusinessRuleFactory(ABC):
@@ -243,11 +272,21 @@ class BusinessRuleJSONFactory(BusinessRuleFactory):
             'NotNullRule' : NotNullRuleJSONFactory,
             'RegExPatternMatchingRule' : RegExPatternMatchingRuleJSONFactory,
             'DomainListMatchingRule' : DomainListMatchingRuleJSONFactory,
+            'NoFoldingWhiteSpacesRule': NoFoldingWhiteSpacesRuleJSONFactory,
+            'EmailRegExPatternMatchingRule' : EmailRegExPatternMatchingRuleJSONFactory,
+            'CWEmailRegExPatternMatchingRule' : CWEmailRegExPatternMatchingRuleJSONFactory,
+            'PhoneRegExPatternMatchingRule' : PhoneRegExPatternMatchingRuleJSONFactory,
+            'LastNameRegExPatternMatchingRule': LastNameRegExPatternMatchingRuleJSONFactory,
+            'FirstNameRegExPatternMatchingRule': FirstNameRegExPatternMatchingRuleJSONFactory,
+            'GermanDateRegExPatternMatchingRule': GermanDateRegExPatternMatchingRuleJSONFactory,
+            'DateTimeRegExPatternMatchingRule': DateTimeRegExPatternMatchingRuleJSONFactory,
+            'DateTimeMEZRegExPatternMatchingRule': DateTimeMEZRegExPatternMatchingRuleJSONFactory
         }
 
         return business_rule_factories.get(self.json_data['business_rule_name'])(
             self.json_data
         ).create()
+
 
 class NotNullRuleFactory(BusinessRuleFactory):
 
@@ -267,11 +306,12 @@ class NotNullRuleJSONFactory(NotNullRuleFactory):
 
 class RegExPatternMatchingRuleFactory(BusinessRuleFactory):
 
-    def __init__(self, pattern):
+    def __init__(self, pattern, dropna):
         self.pattern = pattern
+        self.dropna = dropna
 
     def create(self):
-        return RegExPatternMatchingRule(pattern=self.pattern)
+        return RegExPatternMatchingRule(pattern=self.pattern, dropna=self.dropna)
 
 
 class RegExPatternMatchingRuleJSONFactory(RegExPatternMatchingRuleFactory):
@@ -279,7 +319,152 @@ class RegExPatternMatchingRuleJSONFactory(RegExPatternMatchingRuleFactory):
     def __init__(self, json_data):
         self.json_data = json_data
         super(RegExPatternMatchingRuleJSONFactory, self).__init__(
-            self.json_data['business_rule_config']['pattern']
+            self.json_data['business_rule_config']['pattern'],
+            self.json_data['business_rule_config']['dropna']
+        )
+
+
+class EmailRegExPatternMatchingRuleFactory(BusinessRuleFactory):
+
+    def __init__(self, dropna):
+        self.dropna = dropna
+
+    def create(self):
+        return EmailRegExPatternMatchingRule(dropna=self.dropna)
+
+
+class EmailRegExPatternMatchingRuleJSONFactory(EmailRegExPatternMatchingRuleFactory):
+
+    def __init__(self, json_data):
+        self.json_data = json_data
+        super(EmailRegExPatternMatchingRuleJSONFactory, self).__init__(
+            self.json_data['business_rule_config']['dropna']
+        )
+
+
+class CWEmailRegExPatternMatchingRuleFactory(BusinessRuleFactory):
+
+    def __init__(self, dropna):
+        self.dropna = dropna
+
+    def create(self):
+        return CWEmailRegExPatternMatchingRule(dropna=self.dropna)
+
+
+class CWEmailRegExPatternMatchingRuleJSONFactory(CWEmailRegExPatternMatchingRuleFactory):
+
+    def __init__(self, json_data):
+        self.json_data = json_data
+        super(CWEmailRegExPatternMatchingRuleJSONFactory, self).__init__(
+            self.json_data['business_rule_config']['dropna']
+        )
+
+
+class PhoneRegExPatternMatchingRuleFactory(BusinessRuleFactory):
+
+    def __init__(self, dropna):
+        self.dropna = dropna
+
+    def create(self):
+        return PhoneRegExPatternMatchingRule(dropna=self.dropna)
+
+
+class PhoneRegExPatternMatchingRuleJSONFactory(PhoneRegExPatternMatchingRuleFactory):
+
+    def __init__(self, json_data):
+        self.json_data = json_data
+        super(PhoneRegExPatternMatchingRuleJSONFactory, self).__init__(
+            self.json_data['business_rule_config']['dropna']
+        )
+
+
+class LastNameRegExPatternMatchingRuleFactory(BusinessRuleFactory):
+
+    def __init__(self, dropna):
+        self.dropna = dropna
+
+    def create(self):
+        return LastNameRegExPatternMatchingRule(dropna=self.dropna)
+
+
+class LastNameRegExPatternMatchingRuleJSONFactory(LastNameRegExPatternMatchingRuleFactory):
+
+    def __init__(self, json_data):
+        self.json_data = json_data
+        super(LastNameRegExPatternMatchingRuleJSONFactory, self).__init__(
+            self.json_data['business_rule_config']['dropna']
+        )
+
+
+class FirstNameRegExPatternMatchingRuleFactory(BusinessRuleFactory):
+
+    def __init__(self, dropna):
+        self.dropna = dropna
+
+    def create(self):
+        return FirstNameRegExPatternMatchingRule(dropna=self.dropna)
+
+
+class FirstNameRegExPatternMatchingRuleJSONFactory(FirstNameRegExPatternMatchingRuleFactory):
+
+    def __init__(self, json_data):
+        self.json_data = json_data
+        super(FirstNameRegExPatternMatchingRuleJSONFactory, self).__init__(
+            self.json_data['business_rule_config']['dropna']
+        )
+
+
+class GermanDateRegExPatternMatchingRuleFactory(BusinessRuleFactory):
+
+    def __init__(self, dropna):
+        self.dropna = dropna
+
+    def create(self):
+        return GermanDateRegExPatternMatchingRule(dropna=self.dropna)
+
+
+class GermanDateRegExPatternMatchingRuleJSONFactory(GermanDateRegExPatternMatchingRuleFactory):
+
+    def __init__(self, json_data):
+        self.json_data = json_data
+        super(GermanDateRegExPatternMatchingRuleJSONFactory, self).__init__(
+            self.json_data['business_rule_config']['dropna']
+        )
+
+
+class DateTimeRegExPatternMatchingRuleFactory(BusinessRuleFactory):
+
+    def __init__(self, dropna):
+        self.dropna = dropna
+
+    def create(self):
+        return DateTimeRegExPatternMatchingRule(dropna=self.dropna)
+
+
+class DateTimeRegExPatternMatchingRuleJSONFactory(DateTimeRegExPatternMatchingRuleFactory):
+
+    def __init__(self, json_data):
+        self.json_data = json_data
+        super(DateTimeRegExPatternMatchingRuleJSONFactory, self).__init__(
+            self.json_data['business_rule_config']['dropna']
+        )
+
+
+class DateTimeMEZRegExPatternMatchingRuleFactory(BusinessRuleFactory):
+
+    def __init__(self, dropna):
+        self.dropna = dropna
+
+    def create(self):
+        return DateTimeMEZRegExPatternMatchingRule(dropna=self.dropna)
+
+
+class DateTimeMEZRegExPatternMatchingRuleJSONFactory(DateTimeMEZRegExPatternMatchingRuleFactory):
+
+    def __init__(self, json_data):
+        self.json_data = json_data
+        super(DateTimeMEZRegExPatternMatchingRuleJSONFactory, self).__init__(
+            self.json_data['business_rule_config']['dropna']
         )
 
 
@@ -300,6 +485,21 @@ class DomainListMatchingRuleJSONFactory(DomainListMatchingRuleFactory):
             self.json_data['business_rule_config']['values']
         )
 
+
+class NoFoldingWhiteSpacesRuleFactory(BusinessRuleFactory):
+
+    def __init__(self):
+        pass
+
+    def create(self):
+        return NoFoldingWhiteSpacesRule()
+
+
+class NoFoldingWhiteSpacesRuleJSONFactory(NoFoldingWhiteSpacesRuleFactory):
+
+    def __init__(self, json_data):
+        self.json_data = json_data
+        super(NoFoldingWhiteSpacesRuleJSONFactory, self).__init__()
 
 #------------------------------ Indicator Renderer Factories --------------------------------------
 
@@ -324,7 +524,8 @@ class IndicatorHTMLRendererFactory(IndicatorRendererFactory):
             NullValuesIndicator : NullValuesHTMLRenderer,
             DistinctValuesIndicator : DistinctValuesHTMLRenderer,
             ValueRangeIndicator : ValueRangeHTMLRenderer,
-            PatternFrequencyIndicator : PatternFrequencyHTMLRenderer
+            PatternFrequencyIndicator : PatternFrequencyHTMLRenderer,
+            ShortestValuesIndicator : ShortestValuesHTMLRenderer
         }
 
         return indicator_html_renderer.get(type(self.indicator))(self.indicator)

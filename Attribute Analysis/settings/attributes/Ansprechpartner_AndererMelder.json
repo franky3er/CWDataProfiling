@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "CreatorUser",
+  "attribute_name" : "Ansprechpartner_AndererMelder",
   "dropna" : false,
 
   "indicators" : [
@@ -26,13 +26,12 @@
 
   "business_rules" : [
     {
-      "business_rule_name" : "NotNullRule"
-    },
-    {
-      "business_rule_name" : "RegExPatternMatchingRule",
+      "business_rule_name" : "DomainListMatchingRule",
       "business_rule_config" : {
-        "pattern" : "^\\p{Lu}\\p{Ll}+(-\\p{Lu}\\p{Ll}+)* \\p{Lu}\\p{Ll}+(-\\p{Lu}\\p{Ll}+)*( \\p{Lu}\\p{Ll}+(-\\p{Lu}\\p{Ll}+)*)*$",
-        "dropna" : true
+        "values" : [
+          "0",
+          "1"
+        ]
       }
     }
   ]
