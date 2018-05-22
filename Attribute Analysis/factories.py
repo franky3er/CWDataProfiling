@@ -274,6 +274,7 @@ class BusinessRuleJSONFactory(BusinessRuleFactory):
             'DomainListMatchingRule' : DomainListMatchingRuleJSONFactory,
             'NoFoldingWhiteSpacesRule': NoFoldingWhiteSpacesRuleJSONFactory,
             'EmailRegExPatternMatchingRule' : EmailRegExPatternMatchingRuleJSONFactory,
+            'CWEmailRegExPatternMatchingRule' : CWEmailRegExPatternMatchingRuleJSONFactory,
             'PhoneRegExPatternMatchingRule' : PhoneRegExPatternMatchingRuleJSONFactory,
             'LastNameRegExPatternMatchingRule': LastNameRegExPatternMatchingRuleJSONFactory,
             'FirstNameRegExPatternMatchingRule': FirstNameRegExPatternMatchingRuleJSONFactory,
@@ -337,6 +338,24 @@ class EmailRegExPatternMatchingRuleJSONFactory(EmailRegExPatternMatchingRuleFact
     def __init__(self, json_data):
         self.json_data = json_data
         super(EmailRegExPatternMatchingRuleJSONFactory, self).__init__(
+            self.json_data['business_rule_config']['dropna']
+        )
+
+
+class CWEmailRegExPatternMatchingRuleFactory(BusinessRuleFactory):
+
+    def __init__(self, dropna):
+        self.dropna = dropna
+
+    def create(self):
+        return CWEmailRegExPatternMatchingRule(dropna=self.dropna)
+
+
+class CWEmailRegExPatternMatchingRuleJSONFactory(CWEmailRegExPatternMatchingRuleFactory):
+
+    def __init__(self, json_data):
+        self.json_data = json_data
+        super(CWEmailRegExPatternMatchingRuleJSONFactory, self).__init__(
             self.json_data['business_rule_config']['dropna']
         )
 

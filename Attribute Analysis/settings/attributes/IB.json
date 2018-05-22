@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Hersteller_Ticket_Bemerkungen",
+  "attribute_name" : "IB",
   "dropna" : false,
 
   "indicators" : [
@@ -11,12 +11,6 @@
     },
     {
       "indicator_name" : "ValueRangeIndicator"
-    },
-    {
-      "indicator_name" : "SimilarValuesIndicator",
-      "indicator_config" : {
-        "min_ratio" : 0.85
-      }
     },
     {
       "indicator_name" : "PatternFrequencyIndicator"
@@ -32,5 +26,12 @@
   ],
 
   "business_rules" : [
+    {
+      "business_rule_name" : "RegExPatternMatchingRule",
+      "business_rule_config" : {
+        "pattern" : "^.*_A?IB[0-9]{7}$",
+        "dropna" : true
+      }
+    }
   ]
 }

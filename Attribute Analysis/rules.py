@@ -52,7 +52,15 @@ class EmailRegExPatternMatchingRule(RegExPatternMatchingRule):
     def __init__(self, dropna=False):
         pattern = "([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|\"([]!#-[^-~ \t]|(\\[\t -~]))+\")@([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|\[[\t -Z^-~]*])"
         super(EmailRegExPatternMatchingRule, self).__init__(pattern=pattern, dropna=dropna)
-        self.name = "Email-RegEx-Übereinstimmung"
+        self.name = "Email-RegEx-Übereinstimmung (nach RFC 5322)"
+
+
+class CWEmailRegExPatternMatchingRule(RegExPatternMatchingRule):
+
+    def __init__(self, dropna=False):
+        pattern = "^\p{L}\p{Ll}+(-\p{L}\p{Ll}+)*.\p{L}\p{Ll}+(-\p{L}\p{Ll}+)*@controlware.(de|at)$"
+        super(CWEmailRegExPatternMatchingRule, self).__init__(pattern=pattern, dropna=dropna)
+        self.name = "CW-Email-RegEx-Übereinstimmung"
 
 
 class PhoneRegExPatternMatchingRule(RegExPatternMatchingRule):

@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Hersteller_Ticket_Bemerkungen",
+  "attribute_name" : "IB_AccountManager_Mail",
   "dropna" : false,
 
   "indicators" : [
@@ -32,5 +32,17 @@
   ],
 
   "business_rules" : [
+    {
+      "business_rule_name" : "CWEmailRegExPatternMatchingRule",
+      "business_rule_config" : {
+        "dropna" : true
+      }
+    },
+    {
+      "business_rule_name" : "EmailRegExPatternMatchingRule",
+      "business_rule_config" : {
+        "dropna" : true
+      }
+    }
   ]
 }

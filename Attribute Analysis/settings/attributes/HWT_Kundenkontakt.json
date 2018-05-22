@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Hersteller_Ticket_Bemerkungen",
+  "attribute_name" : "HWT_Kundenkontakt",
   "dropna" : false,
 
   "indicators" : [
