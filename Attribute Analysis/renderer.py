@@ -139,19 +139,46 @@ class SimilarValuesHTMLRenderer(IndicatorRenderer):
 
     def __init__(self, indicator):
         super(SimilarValuesHTMLRenderer, self).__init__(indicator)
+        self.matching_value_count_groups = self.indicator.get_result()
 
     def render_child(self):
-        html_output = """
-                    <p>______________________________________________________________________</p><br/>
-        """
-        for matching_group in self.indicator.get_result():
-            for matching_group_value in matching_group:
-                html_output += """
-                            <p>{matching_group_value}</p>    
-                """.format(matching_group_value = matching_group_value)
+        html_output = ""
+        for matchin_value_count_group in self.matching_value_count_groups:
             html_output += """
-                        <p>______________________________________________________________________</p><br/>
-            """
+                <div class="row">
+                    <div class="col-md-5">
+                        <table class="table table-striped">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th style="width: 80%">Wert</th>
+                                    <th style="width: 20%">Häufigkeit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {matching_value_counts}
+                            </tbody>
+                        </table><br/><br/>
+                    </div>
+                </div>
+            """.format(
+                matching_value_counts=self.__render_matching_value_counts(matchin_value_count_group)
+            )
+
+        return html_output
+
+    def __render_matching_value_counts(self, matchin_value_count_group):
+        html_output = ""
+        for matchin_value_count in matchin_value_count_group:
+            html_output += """
+                                <tr>
+                                    <td>{value}</td>
+                                    <td>{count}</td>
+                                </tr>
+            """.format(
+                value=matchin_value_count[0],
+                count=matchin_value_count[1]
+            )
+
         return html_output
 
 
