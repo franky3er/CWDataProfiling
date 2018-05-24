@@ -129,7 +129,7 @@ class DomainListMatchingRule(BusinessRule):
     def is_valid(self, value):
         if(self.dropna and isnull(value)):
             return True
-        return value in self.values
+        return str(value) in self.values
 
     def get_description(self):
         return "Wert muss einem Wert aus der folgenden Liste entsprechen: {}".format(
