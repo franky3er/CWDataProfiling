@@ -1,0 +1,37 @@
+{
+  "attribute_name" : "IB_Nummer_relevant",
+  "dropna" : false,
+
+  "indicators" : [
+    {
+      "indicator_name" : "NullValuesIndicator"
+    },
+    {
+      "indicator_name" : "DistinctValuesIndicator"
+    },
+    {
+      "indicator_name" : "ValueRangeIndicator"
+    },
+    {
+      "indicator_name" : "PatternFrequencyIndicator"
+    },
+    {
+      "indicator_name" : "ShortestValuesIndicator",
+      "indicator_config" : {
+        "number_of_values" : 100,
+        "dropna" : true
+      }
+    }
+
+  ],
+
+  "business_rules" : [
+    {
+      "business_rule_name" : "RegExPatternMatchingRule",
+      "business_rule_config" : {
+        "pattern" : "^A?IB[0-9]{7}$",
+        "dropna" : true
+      }
+    }
+  ]
+}

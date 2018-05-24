@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Garantie",
+  "attribute_name" : "IB_Bemerkungen",
   "dropna" : false,
 
   "indicators" : [
@@ -34,30 +34,6 @@
   "business_rules" : [
     {
       "business_rule_name" : "NoFoldingWhiteSpacesRule"
-    },
-    {
-      "business_rule_name" : "DomainListMatchingRule",
-      "business_rule_config" : {
-        "values" : [
-          "48-GARLIFE",
-          "57-GAR-LT",
-          "1-GAR-1J",
-          "58-GAR90T",
-          "20-GARLIFE",
-          "58-GAR-ELT",
-          "58-GAR-LLT",
-          "57-GAR 39M",
-          "1-GAR-3J",
-          "127-GAR-EL",
-          "1-GAR-2J",
-          "127-GAR-LL",
-          "21-GARLIFE",
-          "136-3J GAR",
-          "204-GAR 1J",
-          "48-GAR-LLT",
-          "65-GAR-3J"
-        ]
-      }
     }
   ]
 }

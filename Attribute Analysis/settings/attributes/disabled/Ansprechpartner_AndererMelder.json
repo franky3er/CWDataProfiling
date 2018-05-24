@@ -26,12 +26,16 @@
 
   "business_rules" : [
     {
+      "business_rule_name" : "NotNullRule"
+    },
+    {
       "business_rule_name" : "DomainListMatchingRule",
       "business_rule_config" : {
         "values" : [
           "0",
           "1"
-        ]
+        ],
+        "dropna" : true
       }
     }
   ]

@@ -44,7 +44,6 @@ class SimilarValuesIndicator(Indicator):
 
         self.matching_groups.append([value_a, value_b])
 
-
     def get_result(self):
         return self.matching_groups
 

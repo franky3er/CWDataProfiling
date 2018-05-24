@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Hersteller_Tickenstatus",
+  "attribute_name" : "IB_Standort_Strasse",
   "dropna" : false,
 
   "indicators" : [
@@ -32,19 +32,7 @@
   ],
 
   "business_rules" : [
-    {
-      "business_rule_name" : "NoFoldingWhiteSpacesRule"
-    },
-    {
-      "business_rule_name" : "DomainListMatchingRule",
-      "business_rule_config" : {
-        "values" : [
-          "In Bearbeitung", 
-          "Neu", 
-          "Wartend", 
-          "Geschlossen"
-        ]
-      }
-    }
   ]
 }
+
+

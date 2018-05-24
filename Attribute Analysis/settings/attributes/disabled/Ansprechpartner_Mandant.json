@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "HWT_RMA_Status",
+  "attribute_name" : "Ansprechpartner_Mandant",
   "dropna" : false,
 
   "indicators" : [
@@ -36,13 +36,20 @@
       "business_rule_name" : "NotNullRule"
     },
     {
+      "business_rule_name" : "RegExPatternMatchingRule",
+      "business_rule_config" : {
+        "pattern" : "^(A|D)$",
+        "dropna" : true
+      }
+    },
+    {
       "business_rule_name" : "DomainListMatchingRule",
       "business_rule_config" : {
         "values" : [
-          "Nein",
-          "Später",
-          "Ausgeführt"
-        ]
+          "A",
+          "D"
+        ],
+        "dropna" : true
       }
     }
   ]

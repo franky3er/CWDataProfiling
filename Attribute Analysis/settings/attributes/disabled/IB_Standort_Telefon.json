@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Ansprechpartner_Mandant",
+  "attribute_name" : "IB_Standort_Telefon",
   "dropna" : false,
 
   "indicators" : [
@@ -33,23 +33,15 @@
 
   "business_rules" : [
     {
-      "business_rule_name" : "NotNullRule"
+      "business_rule_name" : "NoFoldingWhiteSpacesRule"
     },
     {
-      "business_rule_name" : "RegExPatternMatchingRule",
+      "business_rule_name" : "PhoneRegExPatternMatchingRule",
       "business_rule_config" : {
-        "pattern" : "^(A|D)$",
         "dropna" : true
-      }
-    },
-    {
-      "business_rule_name" : "DomainListMatchingRule",
-      "business_rule_config" : {
-        "values" : [
-          "A",
-          "D"
-        ]
       }
     }
   ]
 }
+
+
