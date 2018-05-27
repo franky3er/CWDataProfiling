@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "IB_Mandant_relevant",
+  "attribute_name" : "LeistungspositionBeschreibung_COS",
   "dropna" : false,
 
   "indicators" : [
@@ -33,14 +33,27 @@
 
   "business_rules" : [
     {
+      "business_rule_name" : "NotNullRule"
+    },
+    {
       "business_rule_name" : "DomainListMatchingRule",
       "business_rule_config" : {
         "values" : [
-          "A",
-          "D"
+          "CCS Platin",
+          "CCS Bronze",
+          "CCS Spezial",
+          "CCS Silber",
+          "CCS Platin PLUS",
+          "CCS VIP",
+          "CCS Gold",
+          "CCS Basic",
+          "CCS Basic PLUS",
+          "COS"
         ],
         "dropna" : true
       }
     }
   ]
 }
+
+

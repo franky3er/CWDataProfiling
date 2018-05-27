@@ -34,7 +34,7 @@
   "business_rules" : [
     {
       "business_rule_name" : "NotNullRule"
-    }
+    },
     {
       "business_rule_name" : "NoFoldingWhiteSpacesRule"
     },
