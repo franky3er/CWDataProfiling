@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "HWT_Details_gespeichert",
+  "attribute_name" : "IB_Standort_Strasse",
   "dropna" : false,
 
   "indicators" : [
@@ -11,6 +11,12 @@
     },
     {
       "indicator_name" : "ValueRangeIndicator"
+    },
+    {
+      "indicator_name" : "SimilarValuesIndicator",
+      "indicator_config" : {
+        "min_ratio" : 0.85
+      }
     },
     {
       "indicator_name" : "PatternFrequencyIndicator"
@@ -26,17 +32,7 @@
   ],
 
   "business_rules" : [
-    {
-      "business_rule_name" : "NotNullRule"
-    },
-    {
-      "business_rule_name" : "DomainListMatchingRule",
-      "business_rule_config" : {
-        "values" : [
-          "0",
-          "1"
-        ]
-      }
-    }
   ]
 }
+
+

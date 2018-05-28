@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Service_de",
+  "attribute_name" : "HWT_Details_gespeichert",
   "dropna" : false,
 
   "indicators" : [
@@ -14,6 +14,13 @@
     },
     {
       "indicator_name" : "PatternFrequencyIndicator"
+    },
+    {
+      "indicator_name" : "ShortestValuesIndicator",
+      "indicator_config" : {
+        "number_of_values" : 100,
+        "dropna" : true
+      }
     }
 
   ],
@@ -26,7 +33,8 @@
       "business_rule_name" : "DomainListMatchingRule",
       "business_rule_config" : {
         "values" : [
-          "Incident"
+          "0",
+          "1"
         ],
         "dropna" : true
       }

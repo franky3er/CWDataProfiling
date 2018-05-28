@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Service_de",
+  "attribute_name" : "Ansprechpartner_AndererMelder",
   "dropna" : false,
 
   "indicators" : [
@@ -11,6 +11,12 @@
     },
     {
       "indicator_name" : "ValueRangeIndicator"
+    },
+    {
+      "indicator_name" : "SimilarValuesIndicator",
+      "indicator_config" : {
+        "min_ratio" : 0.85
+      }
     },
     {
       "indicator_name" : "PatternFrequencyIndicator"
@@ -26,7 +32,8 @@
       "business_rule_name" : "DomainListMatchingRule",
       "business_rule_config" : {
         "values" : [
-          "Incident"
+          "0",
+          "1"
         ],
         "dropna" : true
       }

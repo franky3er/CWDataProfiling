@@ -1,0 +1,48 @@
+{
+  "attribute_name" : "IB_Standort_Ort",
+  "dropna" : false,
+
+  "indicators" : [
+    {
+      "indicator_name" : "NullValuesIndicator"
+    },
+    {
+      "indicator_name" : "DistinctValuesIndicator"
+    },
+    {
+      "indicator_name" : "ValueRangeIndicator"
+    },
+    {
+      "indicator_name" : "SimilarValuesIndicator",
+      "indicator_config" : {
+        "min_ratio" : 0.85
+      }
+    },
+    {
+      "indicator_name" : "PatternFrequencyIndicator"
+    },
+    {
+      "indicator_name" : "ShortestValuesIndicator",
+      "indicator_config" : {
+        "number_of_values" : 100,
+        "dropna" : true
+      }
+    }
+
+  ],
+
+  "business_rules" : [
+    {
+      "business_rule_name" : "NoFoldingWhiteSpacesRule"
+    },
+    {
+      "business_rule_name" : "RegExPatternMatchingRule",
+      "business_rule_config" : {
+        "pattern" : "^\\p{Lu}\\p{Ll}+((-|\\x20|\\x20/\\x20|(\\x20\\p{Ll}+\\.?)*\\x20)\\p{Lu}\\p{Ll}+)*(,\\x20?-?\\p{Lu}\\p{Ll}+((-|\\x20|\\x20/\\x20|(\\x20\\p{Ll}+\\.?)*\\x20)\\p{Lu}\\p{Ll}+)*)*$",
+        "dropna" : true
+      }
+    }
+  ]
+}
+
+

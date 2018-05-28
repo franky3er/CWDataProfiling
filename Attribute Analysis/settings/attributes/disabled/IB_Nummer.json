@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Service_de",
+  "attribute_name" : "IB_Nummer",
   "dropna" : false,
 
   "indicators" : [
@@ -14,20 +14,22 @@
     },
     {
       "indicator_name" : "PatternFrequencyIndicator"
+    },
+    {
+      "indicator_name" : "ShortestValuesIndicator",
+      "indicator_config" : {
+        "number_of_values" : 100,
+        "dropna" : true
+      }
     }
 
   ],
 
   "business_rules" : [
     {
-      "business_rule_name" : "NotNullRule"
-    },
-    {
-      "business_rule_name" : "DomainListMatchingRule",
+      "business_rule_name" : "RegExPatternMatchingRule",
       "business_rule_config" : {
-        "values" : [
-          "Incident"
-        ],
+        "pattern" : "^A?IB[0-9]{7}$",
         "dropna" : true
       }
     }

@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Service_de",
+  "attribute_name" : "IB_Vertragsart",
   "dropna" : false,
 
   "indicators" : [
@@ -13,7 +13,20 @@
       "indicator_name" : "ValueRangeIndicator"
     },
     {
+      "indicator_name" : "SimilarValuesIndicator",
+      "indicator_config" : {
+        "min_ratio" : 0.85
+      }
+    },
+    {
       "indicator_name" : "PatternFrequencyIndicator"
+    },
+    {
+      "indicator_name" : "ShortestValuesIndicator",
+      "indicator_config" : {
+        "number_of_values" : 100,
+        "dropna" : true
+      }
     }
 
   ],
@@ -26,10 +39,14 @@
       "business_rule_name" : "DomainListMatchingRule",
       "business_rule_config" : {
         "values" : [
-          "Incident"
+          "SDEB",
+          "NV",
+          "AT"
         ],
         "dropna" : true
       }
     }
   ]
 }
+
+

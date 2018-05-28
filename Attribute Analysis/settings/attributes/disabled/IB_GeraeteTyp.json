@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "HWT_RMA_Status",
+  "attribute_name" : "IB_GeraeteTyp",
   "dropna" : false,
 
   "indicators" : [
@@ -32,18 +32,5 @@
   ],
 
   "business_rules" : [
-    {
-      "business_rule_name" : "NotNullRule"
-    },
-    {
-      "business_rule_name" : "DomainListMatchingRule",
-      "business_rule_config" : {
-        "values" : [
-          "Nein",
-          "Später",
-          "Ausgeführt"
-        ]
-      }
-    }
   ]
 }

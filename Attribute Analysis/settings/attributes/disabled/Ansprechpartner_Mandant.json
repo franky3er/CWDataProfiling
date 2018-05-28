@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Ansprechpartner_AndererMelder",
+  "attribute_name" : "Ansprechpartner_Mandant",
   "dropna" : false,
 
   "indicators" : [
@@ -20,18 +20,36 @@
     },
     {
       "indicator_name" : "PatternFrequencyIndicator"
+    },
+    {
+      "indicator_name" : "ShortestValuesIndicator",
+      "indicator_config" : {
+        "number_of_values" : 100,
+        "dropna" : true
+      }
     }
 
   ],
 
   "business_rules" : [
     {
+      "business_rule_name" : "NotNullRule"
+    },
+    {
+      "business_rule_name" : "RegExPatternMatchingRule",
+      "business_rule_config" : {
+        "pattern" : "^(A|D)$",
+        "dropna" : true
+      }
+    },
+    {
       "business_rule_name" : "DomainListMatchingRule",
       "business_rule_config" : {
         "values" : [
-          "0",
-          "1"
-        ]
+          "A",
+          "D"
+        ],
+        "dropna" : true
       }
     }
   ]
