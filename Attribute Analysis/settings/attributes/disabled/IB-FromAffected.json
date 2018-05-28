@@ -1,5 +1,5 @@
 {
-  "attribute_name" : "Ansprechpartner_Mobilnummer",
+  "attribute_name" : "IB-FromAffected",
   "dropna" : false,
 
   "indicators" : [
@@ -34,3 +34,5 @@
   "business_rules" : [
   ]
 }
+
+

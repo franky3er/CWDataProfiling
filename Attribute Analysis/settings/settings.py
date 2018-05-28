@@ -1,6 +1,6 @@
-CSV_FILE_PATH = "C:/Users/fdreyer/Documents/Daten/Incidents_2016_2017_archiviert.csv"
+CSV_FILE_PATH = "C://Data/Incidents_2016_2017_archiviert.csv"
 CSV_FILE_ENCODING = "utf-8"
 CSV_FILE_SEPARATOR = ";"
 PANDAS_INDEX_NAME = "FullId"
 ATTRIBUTE_SETTINGS_LOCATION = "./settings/attributes"
-REPORT_DIRECTORY = "C:\\Users\\fdreyer\\Documents\\Data Cleansing beim Issue-Tracking-System der Controlware GmbH\\Data Profiling\\Reports"
+REPORT_DIRECTORY = "C://Data/Reports"

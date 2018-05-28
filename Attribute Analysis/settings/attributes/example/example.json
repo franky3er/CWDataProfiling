@@ -48,14 +48,50 @@
         "values" : [
           "example_value 1",
           "example_value 2"
-        ]
+        ],
+        "dropna" : true
+      }
+    },
+    {
+      "business_rule_name" : "TwoLetterCountryCodeDomainListMatchingRule",
+      "business_rule_config" : {
+        "dropna" : true
       }
     },
     {
       "business_rule_name" : "NoFoldingWhiteSpacesRule"
     },
     {
-      "business_rule_name" : "EmailRegExPatternMatchingRule"
+      "business_rule_name" : "EmailRegExPatternMatchingRule",
+      "business_rule_config" : {
+        "dropna" : true
+      }
+    },
+    {
+      "business_rule_name" : "CWEmailRegExPatternMatchingRule",
+      "business_rule_config" : {
+        "dropna" : true
+      }
+    },
+    {
+      "business_rule_name" : "PhoneRegExPatternMatchingRule",
+      "business_rule_config" : {
+        "dropna" : true
+      }
+    },
+    {
+      "business_rule_name" : "DateTimeRegExPatternMatchingRule",
+      "business_rule_config" : {
+        "dropna" : true
+      }
+    },
+    {
+      "business_rule_name" : "TwoLetterCountryCodeRegExPatternMatchingRule",
+      "business_rule_config" : {
+        "dropna" : true
+      }
     }
   ]
 }
+
+

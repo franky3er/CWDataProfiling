@@ -29,9 +29,8 @@
       "business_rule_name" : "NotNullRule"
     },
     {
-      "business_rule_name" : "RegExPatternMatchingRule",
+      "business_rule_name" : "CWEmailRegExPatternMatchingRule",
       "business_rule_config" : {
-        "pattern": "^\\p{L}\\p{Ll}+(-\\p{L}\\p{Ll}+)*.\\p{L}\\p{Ll}+(-\\p{L}\\p{Ll}+)*@controlware.(de|at)$",
         "dropna" : true
       }
     },

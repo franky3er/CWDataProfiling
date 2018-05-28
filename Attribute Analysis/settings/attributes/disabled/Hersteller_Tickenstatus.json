@@ -1,0 +1,51 @@
+{
+  "attribute_name" : "Hersteller_Tickenstatus",
+  "dropna" : false,
+
+  "indicators" : [
+    {
+      "indicator_name" : "NullValuesIndicator"
+    },
+    {
+      "indicator_name" : "DistinctValuesIndicator"
+    },
+    {
+      "indicator_name" : "ValueRangeIndicator"
+    },
+    {
+      "indicator_name" : "SimilarValuesIndicator",
+      "indicator_config" : {
+        "min_ratio" : 0.85
+      }
+    },
+    {
+      "indicator_name" : "PatternFrequencyIndicator"
+    },
+    {
+      "indicator_name" : "ShortestValuesIndicator",
+      "indicator_config" : {
+        "number_of_values" : 100,
+        "dropna" : true
+      }
+    }
+
+  ],
+
+  "business_rules" : [
+    {
+      "business_rule_name" : "NoFoldingWhiteSpacesRule"
+    },
+    {
+      "business_rule_name" : "DomainListMatchingRule",
+      "business_rule_config" : {
+        "values" : [
+          "In Bearbeitung", 
+          "Neu", 
+          "Wartend", 
+          "Geschlossen"
+        ],
+        "dropna" : true
+      }
+    }
+  ]
+}

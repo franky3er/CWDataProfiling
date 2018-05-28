@@ -23,30 +23,33 @@ class SimilarValuesIndicator(Indicator):
     def __init__(self, data_frame=None, attribute_name=None, min_ratio=0.9):
         super(SimilarValuesIndicator, self).__init__(data_frame=data_frame, attribute_name=attribute_name)
         self.min_ratio = min_ratio
-        self.values = self.data_frame[self.attribute_name].unique()
-        self.matching_groups = []
+        self.value_counts = self.data_frame[self.attribute_name].value_counts(dropna=True)
+        self.matching_value_count_groups = []
         self.name = "Ähnliche Werte"
 
     def analyze(self):
-        for value_a_idx in range(len(self.values)):
-            for value_b_idx in range(value_a_idx + 1, len(self.values)):
-                if SequenceMatcher(None, str(self.values[value_a_idx]), str(self.values[value_b_idx])).ratio() >= self.min_ratio:
-                    self.__assign_to_matching_group(self.values[value_a_idx], self.values[value_b_idx])
+        cnt = 0
+        len_value_counts = sum(1 for _ in self.value_counts)
+        for value_count_a in self.value_counts.items():
+            cnt += 1
+            if cnt < len_value_counts:
+                for value_count_b in self.value_counts[cnt:].items():
+                    if SequenceMatcher(None, str(value_count_a[0]), str(value_count_b[0])).ratio() >= self.min_ratio:
+                        self.__assign_to_matching_value_count_group(value_count_a, value_count_b)
 
-    def __assign_to_matching_group(self, value_a, value_b):
-        for group in self.matching_groups:
-            if value_a in group or value_b in group:
-                if value_a not in group:
-                    group.append(value_a)
-                if value_b not in group:
-                    group.append(value_b)
+    def __assign_to_matching_value_count_group(self, value_count_a, value_count_b):
+        for value_count_group in self.matching_value_count_groups:
+            if value_count_a in value_count_group or value_count_b in value_count_group:
+                if value_count_a not in value_count_group:
+                    value_count_group.append(value_count_a)
+                if value_count_b not in value_count_group:
+                    value_count_group.append(value_count_b)
                 return
 
-        self.matching_groups.append([value_a, value_b])
-
+        self.matching_value_count_groups.append([value_count_a, value_count_b])
 
     def get_result(self):
-        return self.matching_groups
+        return self.matching_value_count_groups
 
 
 class NullValuesIndicator(Indicator):

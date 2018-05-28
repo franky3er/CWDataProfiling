@@ -1,0 +1,48 @@
+{
+  "attribute_name" : "IB_AccountManager_Mail_COS",
+  "dropna" : false,
+
+  "indicators" : [
+    {
+      "indicator_name" : "NullValuesIndicator"
+    },
+    {
+      "indicator_name" : "DistinctValuesIndicator"
+    },
+    {
+      "indicator_name" : "ValueRangeIndicator"
+    },
+    {
+      "indicator_name" : "SimilarValuesIndicator",
+      "indicator_config" : {
+        "min_ratio" : 0.85
+      }
+    },
+    {
+      "indicator_name" : "PatternFrequencyIndicator"
+    },
+    {
+      "indicator_name" : "ShortestValuesIndicator",
+      "indicator_config" : {
+        "number_of_values" : 100,
+        "dropna" : true
+      }
+    }
+
+  ],
+
+  "business_rules" : [
+    {
+      "business_rule_name" : "CWEmailRegExPatternMatchingRule",
+      "business_rule_config" : {
+        "dropna" : true
+      }
+    },
+    {
+      "business_rule_name" : "EmailRegExPatternMatchingRule",
+      "business_rule_config" : {
+        "dropna" : true
+      }
+    }
+  ]
+}

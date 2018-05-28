@@ -1,0 +1,35 @@
+{
+  "attribute_name" : "Service_de",
+  "dropna" : false,
+
+  "indicators" : [
+    {
+      "indicator_name" : "NullValuesIndicator"
+    },
+    {
+      "indicator_name" : "DistinctValuesIndicator"
+    },
+    {
+      "indicator_name" : "ValueRangeIndicator"
+    },
+    {
+      "indicator_name" : "PatternFrequencyIndicator"
+    }
+
+  ],
+
+  "business_rules" : [
+    {
+      "business_rule_name" : "NotNullRule"
+    },
+    {
+      "business_rule_name" : "DomainListMatchingRule",
+      "business_rule_config" : {
+        "values" : [
+          "Incident"
+        ],
+        "dropna" : true
+      }
+    }
+  ]
+}

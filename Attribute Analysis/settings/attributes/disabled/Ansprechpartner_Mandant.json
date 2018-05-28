@@ -48,7 +48,8 @@
         "values" : [
           "A",
           "D"
-        ]
+        ],
+        "dropna" : true
       }
     }
   ]
